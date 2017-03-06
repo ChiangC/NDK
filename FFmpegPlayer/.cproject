@@ -28,10 +28,10 @@
 							</builder>
 							<tool id="com.android.gcc.compiler.1040442235" name="Android GCC Compiler" superClass="com.android.gcc.compiler">
 								<option id="com.android.gcc.option.includePath.966540096" superClass="com.android.gcc.option.includePath" valueType="includePath">
-									<listOptionValue builtIn="false" value="E:/AndroidSDK/android_ndk_r13b_windows_x86_64/android-ndk-r13b/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/lib/gcc/arm-linux-androideabi/4.9.x/include"/>
-									<listOptionValue builtIn="false" value="E:/AndroidSDK/android_ndk_r13b_windows_x86_64/android-ndk-r13b/toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64/lib/gcc/arm-linux-androideabi/4.9.x/include-fixed"/>
-									<listOptionValue builtIn="false" value="E:/AndroidSDK/android_ndk_r13b_windows_x86_64/android-ndk-r13b/platforms/android-9/arch-arm/usr/include"/>
-									<listOptionValue builtIn="false" value="E:/workspace_chiang/FFmpeg/jni/include"/>
+									<listOptionValue builtIn="false" value="&quot;E:\Android_NDK\android-ndk-r13b\toolchains\arm-linux-androideabi-4.9\prebuilt\windows-x86_64\lib\gcc\arm-linux-androideabi\4.9.x\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;E:\Android_NDK\android-ndk-r13b\toolchains\arm-linux-androideabi-4.9\prebuilt\windows-x86_64\lib\gcc\arm-linux-androideabi\4.9.x\include-fixed&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;E:\Android_NDK\android-ndk-r13b\platforms\android-9\arch-arm\usr\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;E:\workspace_ndk\FFmpeg\jni\include&quot;"/>
 								</option>
 								<inputType id="com.android.gcc.inputType.495220165" superClass="com.android.gcc.inputType"/>
 							</tool>
@@ -64,8 +64,10 @@
 		<project id="FFmpeg.null.1291853898" name="FFmpeg"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/FFmpeg"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/FFmpeg"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
@@ -80,4 +82,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.android.AndroidPerProjectProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>

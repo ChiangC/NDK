@@ -51,9 +51,10 @@ include $(PREBUILT_SHARED_LIBRARY)
 #myapp
 include $(CLEAR_VARS)
 LOCAL_MODULE := fmtech_ffmpeg
-LOCAL_SRC_FILES := fm_ffmpeg_player.c
+LOCAL_SRC_FILES := fm_ffmpeg_video_player.c fm_ffmpeg_audio_player.c
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include/ffmpeg
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include/libyuv
+##-landroid参数for native window
 LOCAL_LDLIBS := -llog -ljnigraphics -landroid
 LOCAL_SHARED_LIBRARIES := avcodec avdevice avfilter avformat avutil postproc swresample swscale yuv
 include $(BUILD_SHARED_LIBRARY)

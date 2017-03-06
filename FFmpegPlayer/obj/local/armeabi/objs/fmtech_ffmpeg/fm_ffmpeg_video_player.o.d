@@ -1,5 +1,5 @@
-./obj/local/armeabi/objs/fmtech_ffmpeg/fm_ffmpeg_player.o: \
-  jni/fm_ffmpeg_player.c jni/com_fmtech_ffmpeg_FMPlayer.h \
+./obj/local/armeabi/objs/fmtech_ffmpeg/fm_ffmpeg_video_player.o: \
+  jni/fm_ffmpeg_video_player.c jni/com_fmtech_ffmpeg_FMPlayer.h \
   jni/include/libyuv\libyuv.h jni/include/libyuv/libyuv/basic_types.h \
   jni/include/libyuv/libyuv/compare.h \
   jni/include/libyuv/libyuv/convert.h \

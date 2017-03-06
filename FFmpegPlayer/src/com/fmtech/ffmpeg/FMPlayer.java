@@ -13,6 +13,8 @@ public class FMPlayer {
 
 	public native void render(String input, Surface surface);
 
+	public native void sound(String input, String output);
+
 	static{
 		System.loadLibrary("avutil-54");
 		System.loadLibrary("swresample-1");
