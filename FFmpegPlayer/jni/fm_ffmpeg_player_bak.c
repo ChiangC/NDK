@@ -11,6 +11,14 @@
 #define LOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO,"fmtech_ffmpeg",FORMAT,##__VA_ARGS__);
 #define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"fmtech_ffmpeg",FORMAT,##__VA_ARGS__);
 
+
+struct Player{
+	AVFormatContext* format_ctx;
+	int video_stream_index;
+	int audio_stream_index;
+};
+
+
 JNIEXPORT void JNICALL Java_com_fmtech_ffmpeg_VideoUtils_decode(JNIEnv * env, jclass jcls, jstring input_jstr, jstring output_jstr){
 	//需要转码的视频文件(输入的视频文件)
 	const char* input_cstr = (*env)->GetStringUTFChars(env,input_jstr,NULL);
