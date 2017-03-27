@@ -1,0 +1,9 @@
+#ifndef _ERROR_H
+#define _ERROR_H
+
+#define IO_FILE_ERROR_OPEN_FAILED -1
+#define FF_ERROR_INITIALIZATION_FAILED -10
+#define FF_ERROR_ENCODING_FAILED -11
+
+#endif
+
