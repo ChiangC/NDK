@@ -16,6 +16,8 @@ AVStream *audio_stream = NULL;
 AVCodec *av_codec = NULL;
 AVCodecContext *av_codec_ctx = NULL;
 AVCodecContext *videoCodecCtx = NULL, *audioCodecCtx = NULL;
+AVFrame *frame;
+AVPacket packet;
 
 int frame_width = 0, frame_height = 0;
 enum AVPixelFormat pix_fmt;
@@ -52,6 +54,46 @@ static int open_codec_context(enum AVMediaType type)
 			return -1;
 		}
 	}
+}
+
+int decode_packet(int &got_frame)
+{
+	int ret = 0;
+	got_frame = 0;
+
+	if (packet.stream_index == video_stream->index)
+	{
+		ret = avcodec_decode_video2(videoCodecCtx, frame, &got_frame, &packet);
+		if (ret < 0)
+		{
+			printf("Error:decode video frame failed.\n");
+			return -1;
+		}
+
+		if (got_frame)
+		{
+			av_image_copy(video_dst_data, video_dst_linesize, (const uint8_t **)frame->data, frame->linesize, pix_fmt, frame_width, frame_height);
+			
+			fwrite(video_dst_data[0], 1, video_dst_buffer_size, pOutputVideo);
+		}
+	}
+	else if (packet.stream_index == audio_stream->index)
+	{
+		ret = avcodec_decode_audio4(audioCodecCtx, frame, &got_frame, &packet);
+		if (ret < 0)
+		{
+			printf("Error:decode audio frame failed.\n");
+			return -1;
+		}
+
+		if (got_frame)
+		{
+			size_t unpadded_linesize = frame->nb_samples * av_get_bytes_per_sample((AVSampleFormat)frame->format);
+			fwrite(frame->extended_data[0], 1, unpadded_linesize, pOutputAudio);
+		}
+	}
+
+	return FFMIN(ret, packet.size);
 }
 
 int main(int argc, char **argv)
@@ -93,7 +135,7 @@ int main(int argc, char **argv)
 			video_dst_buffer_size = ret;
 		}
 
-		pOutputVideo = fopen(video_dst_filename, "wb");
+		fopen_s(&pOutputVideo, video_dst_filename, "wb");
 		if (!pOutputVideo)
 		{
 			printf("Error:Opening output yuv file failed.\n");
@@ -101,7 +143,60 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (open_codec_context(AVMEDIA_TYPE_AUDIO) >= 0)
+	{
+		audio_stream = av_stream;
+		audioCodecCtx = av_codec_ctx;
 
+		fopen_s(&pOutputAudio, audio_dst_filename, "wb");
+		if (!pOutputAudio)
+		{
+			printf("Error:Opening output acc file failed.\n");
+			return -1;
+		}
+	}
+	
+	av_dump_format(av_format_ctx, 0, src_filename, 0);
+	
+	//=================读取处理音频和视频数据=================
+	frame = av_frame_alloc();
+	if (frame == NULL)
+	{
+		printf("Error:Allocating AVFrame failed.\n");
+		return -1;
+	}
+
+	av_init_packet(&packet);
+	packet.data = NULL;
+	packet.size = 0;
+	int got_frame = 0;
+	while (av_read_frame(av_format_ctx, &packet) >=0)
+	{
+		do{
+			ret = decode_packet(got_frame);
+			packet.data += ret;
+			packet.size -= ret;
+		} while (packet.size > 0);
+	}
+
+	packet.data = NULL;
+	packet.size = 0;
+
+	do{
+		ret = decode_packet(got_frame);
+		packet.data += ret;
+		packet.size -= ret;
+	} while (got_frame);
+
+	//=================收尾工作=================
+	avcodec_close(videoCodecCtx);
+	avcodec_close(audioCodecCtx);
+	avformat_close_input(&av_format_ctx);
+	av_frame_free(&frame);
+	av_free(video_dst_data[0]);
+
+	fclose(pOutputVideo);
+	fclose(pOutputAudio);
 
 	return 0;
 
