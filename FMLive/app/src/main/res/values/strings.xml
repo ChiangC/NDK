@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">FMLive</string>
+    <string name="start_pushing">开始直播</string>
+	<string name="stop_pushing">停止直播</string>
+</resources>
