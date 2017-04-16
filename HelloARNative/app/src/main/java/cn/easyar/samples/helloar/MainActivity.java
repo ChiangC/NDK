@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import cn.easyar.engine.EasyAR;
 
@@ -54,7 +55,12 @@ public class MainActivity extends AppCompatActivity{
         mARCallback = new ARCallback() {
             @Override
             public void onTrackSuccess(int size) {
+                System.out.println("-------size:"+size);
+            }
 
+            @Override
+            public void onInitSuccess(int size) {
+                Toast.makeText(MainActivity.this, "AR Init Successed.",Toast.LENGTH_SHORT).show();
             }
         };
 
