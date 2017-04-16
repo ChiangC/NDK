@@ -20,6 +20,7 @@ extern "C" {
     JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeRotationChange(JNIEnv* env, jobject obj, jboolean portrait));
 };
 
+static jobject jobj_callback;
 namespace EasyAR {
 namespace samples {
 
@@ -29,10 +30,9 @@ class HelloAR : public AR
 {
 public:
     HelloAR();
-    jobject jobj_callback;
     virtual void initGL();
     virtual void resizeGL(int width, int height);
-    virtual void render();
+    virtual void render(JNIEnv* env);
 private:
     Vec2I view_size;
     Renderer renderer;
@@ -55,7 +55,7 @@ void HelloAR::resizeGL(int width, int height)
     view_size = Vec2I(width, height);
 }
 
-void HelloAR::render()
+void HelloAR::render(JNIEnv* env)
 {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -70,8 +70,13 @@ void HelloAR::render()
     augmenter_.drawVideoBackground();
     glViewport(viewport_[0], viewport_[1], viewport_[2], viewport_[3]);
 
+    int size = frame.targets().size();
     if(NULL != jobj_callback){
 //        jobj_callback
+        jclass jcls_callback = env->GetObjectClass(jobj_callback);
+        jmethodID jmethodID = env->GetMethodID(jcls_callback, "onTrackSuccess", "(I)V");
+        env->CallVoidMethod(jobj_callback, jmethodID, size);
+        printf("jobj_callback is not null.");
     }
 
     for (int i = 0; i < frame.targets().size(); ++i) {
@@ -91,9 +96,16 @@ EasyAR::samples::HelloAR ar;
 
 
 
-JNIEXPORT jboolean JNICALL JNIFUNCTION_NATIVE(nativeInit(JNIEnv*, jobject, jobject callback))
+JNIEXPORT jboolean JNICALL JNIFUNCTION_NATIVE(nativeInit(JNIEnv* env, jobject thiz, jobject callback))
 {
-    ar.jobj_callback = callback;
+    jobj_callback = env->NewGlobalRef(callback);//(*env)->DeleteGlobalRef(env, jobj_callback);
+    if(NULL != jobj_callback){
+    //        jobj_callback
+        jclass jcls_callback = env->GetObjectClass(jobj_callback);
+        jmethodID jmethodID = env->GetMethodID(jcls_callback, "onInitSuccess", "(I)V");
+        env->CallVoidMethod(jobj_callback, jmethodID, 10);
+        printf("jobj_callback is not null.");
+    }
     bool status = ar.initCamera();
     ar.loadFromJsonFile("targets.json", "argame");
     ar.loadFromJsonFile("targets.json", "idback");
@@ -118,9 +130,9 @@ JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeResizeGL(JNIEnv*, jobject, jint 
     ar.resizeGL(w, h);
 }
 
-JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeRender(JNIEnv*, jobject))
+JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeRender(JNIEnv* env, jobject jobj))
 {
-    ar.render();
+    ar.render(env);
 }
 
 JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeRotationChange(JNIEnv*, jobject, jboolean portrait))
