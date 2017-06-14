@@ -9,8 +9,21 @@ android {
         minSdkVersion 17
         targetSdkVersion 23
 
+//        ndk {
+//            moduleName "x264"
+//        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags.add("-I${file("../../../package/include")}".toString())
+                cppFlags.add("-DANDROID")
+                cppFlags.add("-fexceptions")
+                cppFlags.add("-frtti")
+            }
+        }
         ndk {
-            moduleName "x264"
+            abiFilters "armeabi", "armeabi-v7a"
+            stl "gnustl_static"
         }
     }
 
@@ -20,8 +33,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    externalNativeBuild {
+        ndkBuild {
+            path "src/main/jni/Android.mk"
+        }
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.+'
+    compile 'com.android.support:support-v4:23.0.+'
 }
