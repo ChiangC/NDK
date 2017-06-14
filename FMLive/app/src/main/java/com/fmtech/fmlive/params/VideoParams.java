@@ -3,12 +3,12 @@
  * Copyright (C) 2017 FMTech All Rights Reserved.
  *
  * @author Drew.Chiang
- * 
+ *
  * @email chiangchuna@gmail.com
  *
  * @version v1.0.0
- * 
- * @create_date 2017Äê3ÔÂ18ÈÕ ÏÂÎç10:15:38
+ *
+ * @create_date 2017å¹´3æœˆ18æ—¥ ä¸‹åˆ10:15:38
  *
  *==================================================================
  */
@@ -17,13 +17,13 @@
 package com.fmtech.fmlive.params;
 
 public class VideoParams {
-	
+
 	private int width;
 	private int height;
-	private int bitrate = 480000;//ÂëÂÊ480kbps
-	private int fps = 25;//Ö¡ÆµÄ¬ÈÏ25Ö¡/s
+	private int bitrate = 480000;//ç ç‡480kbps
+	private int fps = 25;//å¸§é¢‘é»˜è®¤25å¸§/s
 	private int cameraId;
-	
+
 	/**
 	 * @param width
 	 * @param height
@@ -39,15 +39,15 @@ public class VideoParams {
 	public int getWidth() {
 		return width;
 	}
-	
+
 	public void setWidth(int width) {
 		this.width = width;
 	}
-	
+
 	public int getHeight() {
 		return height;
 	}
-	
+
 	public void setHeight(int height) {
 		this.height = height;
 	}
@@ -71,10 +71,10 @@ public class VideoParams {
 	public int getCameraId() {
 		return cameraId;
 	}
-	
+
 	public void setCameraId(int cameraId) {
 		this.cameraId = cameraId;
 	}
-	
-	
+
+
 }

@@ -3,19 +3,19 @@
  * Copyright (C) 2017 FMTech All Rights Reserved.
  *
  * @author Drew.Chiang
- * 
+ *
  * @email chiangchuna@gmail.com
  *
  * @version v1.0.0
- * 
- * @create_date 2017Äê3ÔÂ21ÈÕ ÏÂÎç8:30:10
+ *
+ * @create_date 2017å¹´3æœˆ21æ—¥ ä¸‹åˆ8:30:10
  *
  *==================================================================
  */
 package com.fmtech.fmlive.listener;
 
 public interface LiveStateChangeListener {
-	
+
 	void onError(int code);
-	
+
 }

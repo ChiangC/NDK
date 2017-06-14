@@ -3,21 +3,21 @@
  * Copyright (C) 2017 FMTech All Rights Reserved.
  *
  * @author Drew.Chiang
- * 
+ *
  * @email chiangchuna@gmail.com
  *
  * @version v1.0.0
- * 
- * @create_date 2017Äê3ÔÂ18ÈÕ ÏÂÎç11:08:22
+ *
+ * @create_date 2017å¹´3æœˆ18æ—¥ ä¸‹åˆ11:08:22
  *
  *==================================================================
  */
 package com.fmtech.fmlive.params;
 
 public class AudioParams {
-	
+
 	private int sampleRateInHz = 44100;
-	
+
 	private int channel = 1;
 
 	/**
@@ -54,6 +54,6 @@ public class AudioParams {
 		this.sampleRateInHz = sampleRateInHz;
 		this.channel = channel;
 	}
-	
-	
+
+
 }

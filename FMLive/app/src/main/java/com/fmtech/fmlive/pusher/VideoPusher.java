@@ -3,12 +3,12 @@
  * Copyright (C) 2017 FMTech All Rights Reserved.
  *
  * @author Drew.Chiang
- * 
+ *
  * @email chiangchuna@gmail.com
  *
  * @version v1.0.0
- * 
- * @create_date 2017Äê3ÔÂ18ÈÕ ÏÂÎç9:30:42
+ *
+ * @create_date 2017å¹´3æœˆ18æ—¥ ä¸‹åˆ9:30:42
  *
  *==================================================================
  */
@@ -34,7 +34,7 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback,Previe
 	private byte[] mCallbackBuffer;
 	private boolean isPushing = false;
 	private PushNative mPushNative;
-	
+
 	public VideoPusher(SurfaceHolder surfaceHolder, VideoParams videoParams, PushNative pushNative) {
 		mVideoParams = videoParams;
 		mPushNative = pushNative;
@@ -51,14 +51,14 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback,Previe
 	@Override
 	public void stopPush() {
 		isPushing = false;
-		
+
 	}
 
 	@Override
 	public void release() {
 		stopPreview();
 	}
-	
+
 	public void switchCamera(){
 		if(mVideoParams.getCameraId() == CameraInfo.CAMERA_FACING_BACK){
 			mVideoParams.setCameraId(CameraInfo.CAMERA_FACING_FRONT);
@@ -91,15 +91,15 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback,Previe
 //				System.out.println("-------previewsize#width:"+size.width+", height:"+size.height);
 //			}
 			for(Integer size:sIntegers){
-			System.out.print("-------"+size);
-			}			
+				System.out.print("-------"+size);
+			}
 			mCamera.setParameters(parameters);
-			
-			//»ñÈ¡Ô¤ÀÀÍ¼ÏñÊı¾İ
+
+			//è·å–é¢„è§ˆå›¾åƒæ•°æ®
 			mCamera.setDisplayOrientation(90);
 			mCallbackBuffer = new byte[mVideoParams.getWidth()*mVideoParams.getHeight()*4];
 			mCamera.addCallbackBuffer(mCallbackBuffer);
-			
+
 			mCamera.startPreview();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -113,29 +113,29 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback,Previe
 			mCamera = null;
 		}
 	}
-	
-	
+
+
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-		
+
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		
+
 	}
 
 	@Override
 	public void onPreviewFrame(byte[] data, Camera camera) {
-		//»Øµ÷·½·¨ÖĞ»ñÈ¡Í¼ÏñÊı¾İ£¬µ÷ÓÃnative·½·¨½øĞĞ´¦Àí
+		//å›è°ƒæ–¹æ³•ä¸­è·å–å›¾åƒæ•°æ®ï¼Œè°ƒç”¨nativeæ–¹æ³•è¿›è¡Œå¤„ç†
 		if(null != mCamera){
 			mCamera.addCallbackBuffer(mCallbackBuffer);
 		}
-		
+
 		if(isPushing && null != mPushNative){
 			mPushNative.fireVideo(data);
-//			System.out.println("-------ÊÓÆµ±àÂë:"+System.currentTimeMillis());
+//			System.out.println("-------è§†é¢‘ç¼–ç :"+System.currentTimeMillis());
 		}
 	}
-	
+
 }

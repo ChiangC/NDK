@@ -3,17 +3,17 @@ LOCAL_PATH := $(call my-dir)
 #x264
 include $(CLEAR_VARS)
 LOCAL_MODULE    := x264
-#EXPORT´ú±íÈ«¾Ö
+#EXPORTä»£è¡¨å…¨å±€
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/x264/include
 LOCAL_SRC_FILES := x264/libx264.a
-#°Ñ±àÒëµÄÔ´ÎÄ¼þ´òÓ¡´¦Àí
+#æŠŠç¼–è¯‘çš„æºæ–‡ä»¶æ‰“å°å¤„ç†
 $(info $(LOCAL_SRC_FILES))
 include $(PREBUILT_STATIC_LIBRARY)
 
 #faac
 include $(CLEAR_VARS)
 LOCAL_MODULE    := faac
-#EXPORT´ú±íÈ«¾Ö
+#EXPORTä»£è¡¨å…¨å±€
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/faac/include
 LOCAL_SRC_FILES := faac/libfaac.a
 $(info $(LOCAL_SRC_FILES))
@@ -22,7 +22,7 @@ include $(PREBUILT_STATIC_LIBRARY)
 #rtmp
 include $(CLEAR_VARS)
 LOCAL_MODULE    := rtmpdump
-#EXPORT´ú±íÈ«¾Ö
+#EXPORTä»£è¡¨å…¨å±€
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/rtmpdump/include
 LOCAL_SRC_FILES := rtmpdump/librtmp.a
 $(info $(LOCAL_SRC_FILES))

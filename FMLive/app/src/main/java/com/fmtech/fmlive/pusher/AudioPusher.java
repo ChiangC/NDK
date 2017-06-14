@@ -14,24 +14,24 @@ public class AudioPusher extends Pusher{
 	private boolean isPushing;
 	private int minBufferSize;
 	private PushNative mPushNative;
-	
+
 	public AudioPusher(AudioParams audioParams, PushNative pushNative) {
 		mAudioParams = audioParams;
 		mPushNative = pushNative;
 		int channelConfig = audioParams.getChannel() == 1?
 				AudioFormat.CHANNEL_IN_MONO:AudioFormat.CHANNEL_IN_STEREO;
 		minBufferSize = AudioRecord.getMinBufferSize(mAudioParams.getSampleRateInHz(), channelConfig, AudioFormat.ENCODING_PCM_16BIT);
-		mAudioRecord = new AudioRecord(AudioSource.MIC, mAudioParams.getSampleRateInHz(), 
+		mAudioRecord = new AudioRecord(AudioSource.MIC, mAudioParams.getSampleRateInHz(),
 				channelConfig, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
-				
+
 	}
-	
+
 	@Override
 	public void startPush() {
 		mPushNative.setAudioOptions(mAudioParams.getSampleRateInHz(), mAudioParams.getChannel());
 		isPushing = true;
 		new Thread(new AudioRecordTask()).start();
-		
+
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class AudioPusher extends Pusher{
 		isPushing = false;
 		mAudioRecord.stop();
 	}
-	
+
 	@Override
 	public void release() {
 		if(null != mAudioRecord){
@@ -47,23 +47,23 @@ public class AudioPusher extends Pusher{
 			mAudioRecord = null;
 		}
 	}
-	
+
 	class AudioRecordTask implements Runnable{
 
 		@Override
 		public void run() {
 			mAudioRecord.startRecording();
-			
+
 			while(isPushing){
 				byte[] audioData = new byte[minBufferSize];
 				int length = mAudioRecord.read(audioData, 0, audioData.length);
 				if(length > 0){
 					mPushNative.fireAudio(audioData, length);
-//					System.out.println("-------ÒôÆµ±àÂë");
+//					System.out.println("-------éŸ³é¢‘ç¼–ç ");
 				}
 			}
 		}
-		
+
 	}
 
 }

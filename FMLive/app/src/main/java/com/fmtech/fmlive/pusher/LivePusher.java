@@ -16,23 +16,23 @@ public class LivePusher implements Callback {
 	private VideoPusher mVideoPusher;
 	private AudioPusher mAudioPusher;
 	private PushNative mPushNative;
-	
+
 	public LivePusher(SurfaceHolder surfaceHolder){
 		mSurfaceHolder = surfaceHolder;
 		mSurfaceHolder.addCallback(this);
 		mPushNative = new PushNative();
 		prepare();
 	}
-	
+
 	private void prepare(){
 		VideoParams videoParams = new VideoParams(480,320, CameraInfo.CAMERA_FACING_BACK);
 		mVideoPusher = new VideoPusher(mSurfaceHolder, videoParams, mPushNative);
-		
+
 		AudioParams audioParams = new AudioParams();
 		mAudioPusher = new AudioPusher(audioParams, mPushNative);
-		
+
 	}
-	
+
 	public void switchCamera(){
 		mVideoPusher.switchCamera();
 	}
@@ -43,7 +43,7 @@ public class LivePusher implements Callback {
 		mPushNative.startPush(url);
 		mPushNative.setLiveStateChangeListener(listener);
 	}
-	
+
 	public void stopPush() {
 		mVideoPusher.stopPush();
 		mAudioPusher.stopPush();
@@ -55,15 +55,15 @@ public class LivePusher implements Callback {
 		mAudioPusher.release();
 		mPushNative.release();
 	}
-	
+
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		
+
 	}
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-		
+
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class LivePusher implements Callback {
 		stopPush();
 		release();
 	}
-	
-	
-	
+
+
+
 }
