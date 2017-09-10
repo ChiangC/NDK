@@ -2,9 +2,9 @@
 #include <stdint.h>
 #include <android/log.h>
 #include <pthread.h>
-#include "x264.h"
-#include "faac.h"
-#include "rtmp.h"
+#include "x264/include/x264.h"
+#include "faac/include/faac.h"
+#include "rtmpdump/include/rtmp.h"
 #include "queue.h"
 
 #ifndef TRUE

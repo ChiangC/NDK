@@ -38,3 +38,17 @@ captures/
 
 # Keystore files
 *.jks
+FMLive/.idea/libraries/support_annotations_23_0_1.xml
+FMLive/.idea/libraries/support_v4_23_0_1.xml
+FMLive/app/.externalNativeBuild/ndkBuild/debug/armeabi/android_gradle_build.json
+FMLive/app/.externalNativeBuild/ndkBuild/debug/armeabi/ndkBuild_build_command.txt
+FMLive/app/.externalNativeBuild/ndkBuild/debug/armeabi/ndkBuild_build_output.txt
+FMLive/app/.externalNativeBuild/ndkBuild/debug/armeabi-v7a/android_gradle_build.json
+FMLive/app/.externalNativeBuild/ndkBuild/debug/armeabi-v7a/ndkBuild_build_command.txt
+FMLive/app/.externalNativeBuild/ndkBuild/debug/armeabi-v7a/ndkBuild_build_output.txt
+FMLive/app/.externalNativeBuild/ndkBuild/release/armeabi/android_gradle_build.json
+FMLive/app/.externalNativeBuild/ndkBuild/release/armeabi/ndkBuild_build_command.txt
+FMLive/app/.externalNativeBuild/ndkBuild/release/armeabi/ndkBuild_build_output.txt
+FMLive/app/.externalNativeBuild/ndkBuild/release/armeabi-v7a/android_gradle_build.json
+FMLive/app/.externalNativeBuild/ndkBuild/release/armeabi-v7a/ndkBuild_build_command.txt
+FMLive/app/.externalNativeBuild/ndkBuild/release/armeabi-v7a/ndkBuild_build_output.txt

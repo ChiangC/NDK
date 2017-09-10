@@ -19,10 +19,10 @@ const char *outputFileName = NULL;
 int frameWidth = 0, frameHeight = 0;
 int bitRate = 0, frameToEncode = 0;
 
-AVCodec *codec = NULL;
-AVCodecContext *codecCtx = NULL;
-AVFrame *frame = NULL;
-AVPacket pkt;
+AVCodec *codec = NULL;//编解码器
+AVCodecContext *codecCtx = NULL;//保存编解码器的上下文
+AVFrame *frame = NULL;//带编码的像素数据
+AVPacket pkt;//保存编码之后的码流
 
 FILE *pFin = NULL;
 FILE *pFout = NULL;
@@ -44,6 +44,7 @@ static int parse_input_paramaters(int argc, char **argv)
 	{
 		return IO_FILE_ERROR_OPEN_FAILED;
 	}
+	//atoi 将字符串转为整型
 	frameWidth = atoi(argv[3]);
 	frameHeight = atoi(argv[4]);
 	bitRate = atoi(argv[5]);
@@ -105,6 +106,7 @@ int main(int argc, char **argv)
 	frame->width = codecCtx->width;
 	frame->height = codecCtx->height;
 	frame->format = codecCtx->pix_fmt;
+	//linesize表示二维像素地址空间的实际宽度，该宽度可能大于图像宽度，因为它可能会在边缘加入填充数据。
 	if (av_image_alloc(frame->data, frame->linesize, frame->width, frame->height, (AVPixelFormat)frame->format, 32) < 0)
 	{
 		return FF_ERROR_INITIALIZATION_FAILED;
@@ -156,7 +158,7 @@ int main(int argc, char **argv)
 		{
 			printf("Write cached packet of frame %d, size = %d", frameIdx, pkt.size);
 			fwrite(pkt.data, 1, pkt.size, pFout);
-			av_packet_unref(&pkt);
+			av_packet_unref(&pkt);//释放内存，否则会导致内存泄露
 		}
 		/*else
 		{
