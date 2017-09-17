@@ -15,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FFMpegRemuxerMain1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="FFMpegRemuxerMain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
