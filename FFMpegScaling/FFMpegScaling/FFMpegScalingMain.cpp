@@ -46,7 +46,7 @@ static int read_yuv_from_src_file(uint8_t *src_data[4], int src_linesize[4], int
 	return frame_size;
 }
 
-int main(int argc, char **argv){
+int _main(int argc, char **argv){
 	uint8_t *src_data[4], *dst_data[4];
 	int src_linesize[4], dst_linesize[4];
 	int src_w, src_h, dst_w, dst_h;
@@ -156,5 +156,16 @@ end:
 	av_freep(&dst_data[0]);
 	sws_freeContext(sws_ctx);
 
+	return 0;
+}
+
+//# include <stdio.h>
+# include <string.h>
+int main()
+{
+	char str1[3];
+	char str2[20] = { "this is a test" };
+	strcpy(str1, str2);
+	printf("%s\n", str1);
 	return 0;
 }
