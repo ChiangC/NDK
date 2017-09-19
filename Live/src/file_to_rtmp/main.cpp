@@ -12,10 +12,13 @@ using namespace std;
 #pragma comment(lib, "avutil.lib")
 #pragma comment(lib, "avcodec.lib")
 
+#define __STDC_CONSTANT_MACROS
+
 int XError(int errNum){
 	char buf[1024] = { 0 };
 	av_strerror(errNum, buf, sizeof(buf));
 	cout << buf << endl;
+	getchar();
 	return -1;
 }
 
@@ -25,7 +28,7 @@ static double r2d(AVRational r){
 
 int main(int argc, char *argv[])
 {
-	const char *inUrl = "FMLive.mp4";
+	const char *inUrl = "FMLive.flv";
 	const char *outUrl = "rtmp://106.14.33.215:1935/live/fmlive";
 
 
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
 
 	//创建输出流上下文
 	AVFormatContext *ofmt_ctx = NULL;
-	ret = avformat_alloc_output_context2(&ofmt_ctx, NULL, "mp4", outUrl);
+	ret = avformat_alloc_output_context2(&ofmt_ctx, NULL, "flv", outUrl);
 	if (!ofmt_ctx){
 		return XError(ret);
 	}
@@ -88,8 +91,6 @@ int main(int argc, char *argv[])
 
 	///////////////////////////////////////////////////
 	//rtmp推流
-	
-	
 	//打开IO
     ret = avio_open(&ofmt_ctx->pb, outUrl, AVIO_FLAG_WRITE);
     if(!ofmt_ctx->pb){
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
     }
 	
 	//写入头信息
-ret = avformat_write_header(ofmt_ctx, NULL);
+	ret = avformat_write_header(ofmt_ctx, NULL);
     if(ret < 0){
         return XError(ret);
     }
@@ -119,12 +120,12 @@ ret = avformat_write_header(ofmt_ctx, NULL);
         AVRational itime = ifmt_ctx->streams[pkt.stream_index]->time_base;
         AVRational otime = ofmt_ctx->streams[pkt.stream_index]->time_base;
 
-        pkt.pts = av_rescale_q_rnd(pkt.pts, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
-        pkt.dts = av_rescale_q_rnd(pkt.dts, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
-        pkt.duration = av_rescalse_q_rnd(pkt.duration, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
-        pkt.position = -1;
+		pkt.pts = av_rescale_q_rnd(pkt.pts, itime, otime, (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+		pkt.dts = av_rescale_q_rnd(pkt.dts, itime, otime, (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+		pkt.duration = av_rescale_q_rnd(pkt.duration, itime, otime, (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+        pkt.pos = -1;
 
-        //视频帧推送速度
+        //视频帧推送速度控制
         if(ifmt_ctx->streams[pkt.stream_index]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO){
             AVRational tb = ifmt_ctx->streams[pkt.stream_index]->time_base;
             //已经过去的时间
@@ -136,16 +137,14 @@ ret = avformat_write_header(ofmt_ctx, NULL);
             }
 
         }
-        if(ret < 0){
-            return XError(ret);
-        }
-
+        
         ret = av_interleaved_write_frame(ofmt_ctx, &pkt);
-
+		if (ret < 0){
+			return XError(ret);
+		}
 
         av_packet_unref(&pkt);
     }
-	
 
 	getchar();
 	return 0;

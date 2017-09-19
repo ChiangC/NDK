@@ -45,7 +45,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>..\..\include</AdditionalIncludeDirectories>
       <AdditionalOptions>/D__STDC_FORMAT_MACROS_ /D__STDC_CONSTANT_MACROS_ %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
