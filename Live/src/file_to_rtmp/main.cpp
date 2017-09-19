@@ -120,7 +120,7 @@ ret = avformat_write_header(ofmt_ctx, NULL);
         AVRational otime = ofmt_ctx->streams[pkt.stream_index]->time_base;
 
         pkt.pts = av_rescale_q_rnd(pkt.pts, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
-        pkt.dts = av_rescale_q_rnd(pkt.pts, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+        pkt.dts = av_rescale_q_rnd(pkt.dts, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
         pkt.duration = av_rescalse_q_rnd(pkt.duration, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
         pkt.position = -1;
 
