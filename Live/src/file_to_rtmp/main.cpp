@@ -1,14 +1,16 @@
 extern "C"
 {
-#include "libavformat/avformat.h"//Í·ÎÄ¼şÖ»ÊÇÔÚ±àÒëÊ±£¬ÓÃÀ´Óï·¨¼ì²â£¬ÄÜÕÒµ½º¯ÊıµÄÉùÃ÷
+#include "libavformat/avformat.h"//å¤´æ–‡ä»¶åªæ˜¯åœ¨ç¼–è¯‘æ—¶ï¼Œç”¨æ¥è¯­æ³•æ£€æµ‹ï¼Œèƒ½æ‰¾åˆ°å‡½æ•°çš„å£°æ˜
+#include "libavutil/time.h"
 }
 
 #include <iostream>
 using namespace std;
 
-//Ìí¼Ó¿âÎÄ¼ş£¬ÒÑÕÒµ½º¯ÊıµÄ¶¨Òå
+//æ·»åŠ åº“æ–‡ä»¶ï¼Œå·²æ‰¾åˆ°å‡½æ•°çš„å®šä¹‰
 #pragma comment(lib,"avformat.lib")
 #pragma comment(lib, "avutil.lib")
+#pragma comment(lib, "avcodec.lib")
 
 int XError(int errNum){
 	char buf[1024] = { 0 };
@@ -17,31 +19,35 @@ int XError(int errNum){
 	return -1;
 }
 
+static double r2d(AVRational r){
+    return r.num == 0 || r.den == 0?0. : (double)r.num/(double)r.den;
+}
+
 int main(int argc, char *argv[])
 {
 	const char *inUrl = "FMLive.mp4";
 	const char *outUrl = "rtmp://106.14.33.215:1935/live/fmlive";
 
 
-	//³õÊ¼»¯ËùÓĞ·â×°½â·â×° flv mp4 mov mp3
+	//åˆå§‹åŒ–æ‰€æœ‰å°è£…è§£å°è£… flv mp4 mov mp3
 	av_register_all();
 
-	//³õÊ¼»¯ÍøÂç¿â
+	//åˆå§‹åŒ–ç½‘ç»œåº“
 	avformat_network_init();
 
-	//1.´ò¿ªÎÄ¼ş½â·â×°
-	//ÊäÈë·â×°ÉÏÏÂÎÄ
+	//1.æ‰“å¼€æ–‡ä»¶è§£å°è£…
+	//è¾“å…¥å°è£…ä¸Šä¸‹æ–‡
 	AVFormatContext *ifmt_ctx = NULL;
 	
-	//´ò¿ªÎÄ¼ş£¬½â·âÎÄ¼şÍ·
-	//´«µÄÊÇifmt_ctxµÄµØÖ·£¬ËµÃ÷ifmt_ctxÓÉÎÒÃÇ½øĞĞ·ÖÅä£¬ÕâÑù£¬¾ÍÒª×¢Òâ½øĞĞÊÍ·Å¡£
+	//æ‰“å¼€æ–‡ä»¶ï¼Œè§£å°æ–‡ä»¶å¤´
+	//ä¼ çš„æ˜¯ifmt_ctxçš„åœ°å€ï¼Œè¯´æ˜ifmt_ctxç”±æˆ‘ä»¬è¿›è¡Œåˆ†é…ï¼Œè¿™æ ·ï¼Œå°±è¦æ³¨æ„è¿›è¡Œé‡Šæ”¾ã€‚
 	int ret = avformat_open_input(&ifmt_ctx,inUrl, NULL, NULL);
 	if (ret < 0){
 		return XError(ret);
 	}
 	cout << "Open file '" << inUrl << "' success." << endl;
 
-	//»ñÈ¡ÒôÆµÊÓÆµÁ÷ĞÅÏ¢, h264 flv
+	//è·å–éŸ³é¢‘è§†é¢‘æµä¿¡æ¯, h264 flv
 	ret = avformat_find_stream_info(ifmt_ctx, NULL);
 	if (ret < 0){
 		return XError(ret);
@@ -50,9 +56,9 @@ int main(int argc, char *argv[])
 	av_dump_format(ifmt_ctx, 0, inUrl, 0);
 
 	///////////////////////////////////////////////////
-	//Êä³öÁ÷
+	//è¾“å‡ºæµ
 
-	//´´½¨Êä³öÁ÷ÉÏÏÂÎÄ
+	//åˆ›å»ºè¾“å‡ºæµä¸Šä¸‹æ–‡
 	AVFormatContext *ofmt_ctx = NULL;
 	ret = avformat_alloc_output_context2(&ofmt_ctx, NULL, "mp4", outUrl);
 	if (!ofmt_ctx){
@@ -60,18 +66,18 @@ int main(int argc, char *argv[])
 	}
 	cout << "ofmt_ctx create success!" << endl;
 	
-	//ÅäÖÃÊä³öÁ÷
-	//±éÀúÊäÈëµÄAVStream
+	//é…ç½®è¾“å‡ºæµ
+	//éå†è¾“å…¥çš„AVStream
 	for (unsigned int i = 0; i < ifmt_ctx->nb_streams; i++){
 		AVStream *out_stream = avformat_new_stream(ofmt_ctx, ifmt_ctx->streams[i]->codec->codec);
 		if (!out_stream){
 			return XError(0);
 		}
 
-		//¸´ÖÆÅäÖÃĞÅÏ¢,ÓÃÓÚmp4
+		//å¤åˆ¶é…ç½®ä¿¡æ¯,ç”¨äºmp4
 		ret = avcodec_copy_context(out_stream->codec, ifmt_ctx->streams[i]->codec);
 		
-		//¸´ÖÆÅäÖÃĞÅÏ¢,ĞÂ°æ±¾
+		//å¤åˆ¶é…ç½®ä¿¡æ¯,æ–°ç‰ˆæœ¬
 		//ret = avcodec_parameters_copy(out_stream->codecpar, ifmt_ctx->streams[i]->codecpar);
 		out_stream->codec->codec_tag = 0;
 	
@@ -81,9 +87,65 @@ int main(int argc, char *argv[])
 	av_dump_format(ofmt_ctx, 0, outUrl, 1);
 
 	///////////////////////////////////////////////////
-	//rtmpÍÆÁ÷
-	//Ğ´ÈëÍ·ĞÅÏ¢
+	//rtmpæ¨æµ
+	
+	
+	//æ‰“å¼€IO
+    ret = avio_open(&ofmt_ctx->pb, outUrl, AVIO_FLAG_WRITE);
+    if(!ofmt_ctx->pb){
+        return XError(ret);
+    }
+	
+	//å†™å…¥å¤´ä¿¡æ¯
+ret = avformat_write_header(ofmt_ctx, NULL);
+    if(ret < 0){
+        return XError(ret);
+    }
+	
+	cout<< "avformat_write_header"<< endl;
 
+    //æ¨æµæ¯ä¸€å¸§æ•°æ®
+    AVPacket pkt;
+    long long startTime = av_gettime();//è·å–å¾®å¦™æ—¶é—´æˆ³
+
+    while(true){
+        ret = av_read_frame(ifmt_ctx, &pkt);
+        if(ret != 0){
+            break;
+        }
+
+        cout<< pkt.pts << " "<<flush;
+        //è®¡ç®—è½¬æ¢pts dts
+        AVRational itime = ifmt_ctx->streams[pkt.stream_index]->time_base;
+        AVRational otime = ofmt_ctx->streams[pkt.stream_index]->time_base;
+
+        pkt.pts = av_rescale_q_rnd(pkt.pts, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+        pkt.dts = av_rescale_q_rnd(pkt.pts, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+        pkt.duration = av_rescalse_q_rnd(pkt.duration, itime, otime, (AVRational)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+        pkt.position = -1;
+
+        //è§†é¢‘å¸§æ¨é€é€Ÿåº¦
+        if(ifmt_ctx->streams[pkt.stream_index]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO){
+            AVRational tb = ifmt_ctx->streams[pkt.stream_index]->time_base;
+            //å·²ç»è¿‡å»çš„æ—¶é—´
+            long long now = av_gettime() - startTime;
+            long long dts = 0;
+            dts = pkt.dts * (1000*1000*r2d(tb));
+            if(dts > now){
+                av_usleep(dts - now);
+            }
+
+        }
+        if(ret < 0){
+            return XError(ret);
+        }
+
+        ret = av_interleaved_write_frame(ofmt_ctx, &pkt);
+
+
+        av_packet_unref(&pkt);
+    }
+	
 
 	getchar();
 	return 0;
