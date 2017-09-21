@@ -64,8 +64,8 @@ int main(int argc, char **argv)
         int srcW = cam.get(CAP_PROP_FRAME_WIDTH);
         int srcH = cam.get(CAP_PROP_FRAME_HEIGHT);
         int dstW = srcW, dstH = srcH;
-        int fps = cam.get(CAP_PROP_FPS);
-
+        //int fps = cam.get(CAP_PROP_FPS);
+		int fps = 25;
         ///2.初始化格式转换上下文
         vsc = sws_getCachedContext(vsc,
                                    srcW, srcH, AV_PIX_FMT_BGR24,//源宽、高、像素格式
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
         codec_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;//全局参数
         codec_ctx->codec_id = codec->id;
         codec_ctx->thread_count = 8;//编码线程数量
-        codec_ctx->bit_rate = 200*1024*8;//压缩后每秒视频的bit位大小,通过压缩率控制视频的码率；200KB
+        codec_ctx->bit_rate = 50*1024*8;//压缩后每秒视频的bit位大小,通过压缩率控制视频的码率；50KB
         codec_ctx->width = srcW;
         codec_ctx->height = srcH;
         codec_ctx->time_base = {1,fps};//pts以什么数进行计算
@@ -146,8 +146,9 @@ int main(int argc, char **argv)
         }
 
         vstream->codecpar->codec_tag = 0;
+
         //从编码器复制参数
-        avcodec_parameters_from_context(vstream->codecpar, avcodec);
+		avcodec_parameters_from_context(vstream->codecpar, codec_ctx);
         av_dump_format(ofmt_ctx, 0, outUrl, 1);
 
         //打开rtmp的网络输出IO
@@ -165,10 +166,6 @@ int main(int argc, char **argv)
             av_strerror(ret, buf, sizeof(buf) -1);
             throw exception(buf);
         }
-
-
-
-
 
         AVPacket pkt;
         memset(&pkt, 0, sizeof(pkt));
@@ -209,7 +206,8 @@ int main(int argc, char **argv)
             cout << h << " " << flush;
 
             ///h264编码
-            yuv->pts = vpts++;
+            yuv->pts = vpts;
+			vpts++;
 
             ret = avcodec_send_frame(codec_ctx, yuv);
             if(ret != 0){
@@ -217,6 +215,7 @@ int main(int argc, char **argv)
             }
 
             ret = avcodec_receive_packet(codec_ctx, &pkt);
+
             if(ret != 0 || pkt.size > 0){
                 cout << "*" << pkt.size << flush;
             }else{
@@ -224,9 +223,11 @@ int main(int argc, char **argv)
             }
 
             ///推流
-            pkt->pts = av_rescale_q(pkt.pts, codec_ctx->time_base, vstream->time_base);
-            pkt->dts = av_rescale_q(pkt.dts, codec_ctx->time_base, vstream->time_base);
+            pkt.pts = av_rescale_q(pkt.pts, codec_ctx->time_base, vstream->time_base);
+            pkt.dts = av_rescale_q(pkt.dts, codec_ctx->time_base, vstream->time_base);
+
             ret = av_interleaved_write_frame(ofmt_ctx, &pkt);
+
             if(ret == 0){
                 cout<< "#" << endl;
             }
@@ -247,9 +248,9 @@ int main(int argc, char **argv)
             avcodec_free_context(&codec_ctx);
         }
 
-        if(vc){
+		if (codec_ctx){
             avio_closep(&ofmt_ctx->pb);
-            avcodec_free_context(&vc);
+			avcodec_free_context(&codec_ctx);
         }
 
         cerr << ex.what() << endl;
