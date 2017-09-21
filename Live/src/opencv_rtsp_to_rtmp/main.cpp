@@ -5,28 +5,28 @@
 #include <iostream>
 extern "C"
 {
-#include <libswscale/swsclae.h>
+#include <libswscale/swscale.h>
 #include <libavcodec/avcodec.h>
 }
 //预处理失败，找不到头文件；编译失败语法错误；链接失败，找不到lib文件；执行失败，找不到动态链接库。
 using namespace cv;
 using namespace std;
 
-#pragma comment(lib, "opencv_world320.lib")
-#pragma comment(lib, "swscale.lib");
-#pragma comment(lib, "avcodec.lib");
-#pragma comment(lib, "avutil.lib");
+#pragma comment(lib, "opencv_world320d.lib")
+#pragma comment(lib, "swscale.lib")
+#pragma comment(lib, "avcodec.lib")
+#pragma comment(lib, "avutil.lib")
 
 int main(int argc, char *argv)
 {
-    const char *inUrl = "rtsp://";
+    const char *inUrl = "rtsp://admin:ASZSCS@192.168.3.3";
     const char *outUrl = "rtmp://106.14.33.215:1935/live/fmlive";
 
     Mat frame;
     namedWindow("video");
 
     //像素格式转换上下文
-    SwsContext vsc = NULL;
+    SwsContext *vsc = NULL;
 
     //输出的数据结构
     AVFrame *yuv = NULL;
@@ -34,12 +34,14 @@ int main(int argc, char *argv)
     //编码器上下文
     AVCodecContext *codec_ctx = NULL;
 
+	VideoCapture cam;
+
     try{
     ////////////////////////////////////////////////////////////
         ///1.使用opencv打开rtsp相机
-        VideoCapture cam;
+    
         cam.open(inUrl);
-        if(!cam.isOpend()){
+        if(!cam.isOpened()){
             throw exception("Cam open failed!");
         }
         cout <<inUrl<< " cam open success!" << endl;
@@ -64,7 +66,7 @@ int main(int argc, char *argv)
 
         ///3.初始化输出的数据结构
         yuv = av_frame_alloc();
-        yuv->fromat = AV_PIX_FMT_YUV420P;
+        yuv->format = AV_PIX_FMT_YUV420P;
         yuv->width = srcW;
         yuv->height = srcH;
         yuv->pts = 0;
@@ -100,7 +102,7 @@ int main(int argc, char *argv)
         codec_ctx->width = srcW;
         codec_ctx->height = srcH;
         codec_ctx->time_base = {1,fps};//pts以什么数进行计算
-        codec_ctx->framerate = {ps,1};//帧率
+        codec_ctx->framerate = {fps,1};//帧率
         codec_ctx->gop_size = 50;//画面组的大小，多少帧一个关键帧
 
         //4.打开编码器上下文
@@ -120,7 +122,7 @@ int main(int argc, char *argv)
                 continue;
             }
 
-            imShow("video", frame);
+            imshow("video", frame);
             waitKey(1);
 
 

@@ -29,6 +29,7 @@ static double r2d(AVRational r){
 int main(int argc, char *argv[])
 {
 	const char *inUrl = "FMLive.flv";
+	//const char *inUrl = "rtsp://admin:ASZSCS@192.168.3.3";
 	const char *outUrl = "rtmp://106.14.33.215:1935/live/fmlive";
 
 
