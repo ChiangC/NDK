@@ -55,6 +55,7 @@ int main(int argc, char **argv)
         ///1.使用opencv打开rtsp相机
     
         cam.open(inUrl);
+		//cam.open(0);
         if(!cam.isOpened()){
             throw exception("Cam open failed!");
         }
@@ -160,6 +161,8 @@ int main(int argc, char **argv)
         }
 
         //写入封装头
+		//注意：写入封装头后可能会把vstream的time_base改掉，
+		//所以等用到time_base的时候一定要，拿视频流中的time_base再进行计算
         ret = avformat_write_header(ofmt_ctx, NULL);
         if(ret != 0){
             char buf[1024] = {0};
@@ -229,7 +232,7 @@ int main(int argc, char **argv)
             ret = av_interleaved_write_frame(ofmt_ctx, &pkt);
 
             if(ret == 0){
-                cout<< "#" << endl;
+				cout << "#" << flush;
             }
         }
 
