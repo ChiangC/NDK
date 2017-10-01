@@ -1,7 +1,7 @@
 #include "XMediaEncode.h"
 extern "C"
 {
-#include <libswscalse/swscale.h>
+#include <libswscale/swscale.h>
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 }
@@ -10,50 +10,52 @@ extern "C"
 #pragma comment(lib, "avformat.lib")
 
 #include <iostream>
-using namespace std
+using namespace std;
 
 #if defined WIN32 || defined _WIN32
 #include <windows.h>
 #endif
 
-
 static int XGetCpuNum()
 {
 #if defined WIN32 || defined _WIN32
-    SYSTEM_INFO sysinfo;
-        GetSystemInfo(&sysinfo);
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
 
-        return (int)sysinfo.dwNumberOfProcessors;
-}
+	return (int)sysinfo.dwNumberOfProcessors;
+
 #elif defined __linux__
-    return (int)sysconf(SC_NPROCESSORS_ONLN);
+	return (int)sysconf(SC_NPROCESSORS_ONLN);
 #elif defined __APPLE__
-    int numCPU = 0;
-    int mib[4];
-    size_t len = sizeof(numCPU);
+	int numCPU = 0;
+	int mib[4];
+	size_t len = sizeof(numCPU);
 
-    //set the mib for hw.nepu
-    mib[0] = CTL_HW;
-    mib[1] = HW_AVAILCPU; //alternatively, try HW_NCPU;
+	//set the mib for hw.nepu
+	mib[0] = CTL_HW;
+	mib[1] = HW_AVAILCPU; //alternatively, try HW_NCPU;
 
-    //get the number of CUPUs from the system
-    syctl(mib, 2, &numCPU, &len, NULL, 0);
+	//get the number of CUPUs from the system
+	syctl(mib, 2, &numCPU, &len, NULL, 0);
 
-    if(numCPU < 1)
-    {
-        mib[1] = HW_NCPU;
-        sysctl(mib, 2, &numCPU, &len, NULL, 0);
+	if (numCPU < 1)
+	{
+		mib[1] = HW_NCPU;
+		sysctl(mib, 2, &numCPU, &len, NULL, 0);
 
-        if(numCPU)
-            numCPU = 1;
-    }
+		if (numCPU)
+			numCPU = 1;
+	}
 
-    return (int)numCPU;
+	return (int)numCPU;
 #else
-    return
+	return 1;
+#endif
+}
 
 
-class CXMediaEncode:pubic XMediaEncode
+
+class CXMediaEncode:public XMediaEncode
 {
 public :
    void Close()
@@ -67,13 +69,20 @@ public :
         if(yuv){
             av_frame_free(&yuv);
         }
+
+		if (codec_ctx){
+			avcodec_free_context(&codec_ctx);
+		}
+
+		vpts = 0;
+		av_packet_unref(&packet);
    }
 
    bool InitScale()
    {
         vsc = sws_getCachedContext(vsc,
-			srcW, srcH, AV_PIX_FMT_BGR24,//源宽、高、像素格式
-			dstW, dstH, AV_PIX_FMT_YUV420P,//目标宽、高、像素格式
+			inWidth, inHeight, AV_PIX_FMT_BGR24,//源宽、高、像素格式
+			outWidth, outHeight, AV_PIX_FMT_YUV420P,//目标宽、高、像素格式
 			SWS_BICUBIC,//尺寸变化使用算法
 			0, 0, 0);
 		if(!vsc)
@@ -84,8 +93,8 @@ public :
 
 		yuv = av_frame_alloc();
         yuv->format = AV_PIX_FMT_YUV420P;
-        yuv->width = srcW;
-        yuv->height = srcH;
+        yuv->width = inWidth;
+        yuv->height = inHeight;
         yuv->pts = 0;
 
         //分配yuv空间
@@ -121,14 +130,73 @@ public :
 
     bool InitVideoCodec()
     {
+		///4.初始化编码上下文
+		//a.找到编码器
+		AVCodec *codec = avcodec_find_encoder(AV_CODEC_ID_H264);
 
+		if (!codec){
+			cout<<"Can't find h264 encoder!"<<endl;
+			return false;
+		}
+
+		//b.创建编码器上下文
+		codec_ctx = avcodec_alloc_context3(codec);
+		if (!codec_ctx){
+			cout<<"avcodec_alloc_context3 failed!"<<endl;
+			return false;
+		}
+
+		//c.配置编码器参数
+		codec_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;//全局参数
+		codec_ctx->codec_id = codec->id;
+		codec_ctx->thread_count = XGetCpuNum();//编码线程数量
+		codec_ctx->bit_rate = 50 * 1024 * 8;//压缩后每秒视频的bit位大小,通过压缩率控制视频的码率；50KB
+		codec_ctx->width = outWidth;
+		codec_ctx->height = outHeight;
+		codec_ctx->time_base = { 1, fps };//pts以什么数进行计算
+		codec_ctx->framerate = { fps, 1 };//帧率
+		codec_ctx->gop_size = 50;//画面组的大小，多少帧一个关键帧
+		codec_ctx->max_b_frames = 0; //B帧
+		codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+
+
+		//d.打开编码器上下文
+		int ret = avcodec_open2(codec_ctx, NULL, NULL);
+		if (ret != 0){
+			char buf[1024] = { 0 };
+			av_strerror(ret, buf, sizeof(buf)-1);
+			cout << buf << endl;
+			return false;
+		}
+		cout << "avcodec_open2 success" << endl;
     }
+
+	AVPacket* EncodeVideo(AVFrame* frame)
+	{
+		av_packet_unref(&packet);
+		///h264编码
+		yuv->pts = vpts;
+		vpts++;
+
+		int ret = avcodec_send_frame(codec_ctx, yuv);
+		if (ret != 0){
+			return NULL;
+		}
+
+		ret = avcodec_receive_packet(codec_ctx, &packet);
+		if (ret != 0 || packet.size <=0){
+			return NULL;
+		}
+
+		return &packet;
+	}
 
 private:
     SwsContext *vsc = NULL;//像素格式转换上下文
     AVFrame *yuv = NULL;
-    //编码器上下文
-
+    
+	AVPacket packet;
+	int vpts = 0;
 };
 
 XMediaEncode * XMediaEncode::Get(unsigned char index)
@@ -141,7 +209,7 @@ XMediaEncode * XMediaEncode::Get(unsigned char index)
         isFirst = false;
     }
 
-    static CXMediaEncode cxm[255];
+	static CXMediaEncode cxm[255];
     return &cxm[index];
 }
 
@@ -152,7 +220,5 @@ XMediaEncode::XMediaEncode()
 
 XMediaEncode::~XMediaEncode()
 {
-
-
 
 }
