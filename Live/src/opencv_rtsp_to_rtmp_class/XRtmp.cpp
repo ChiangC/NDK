@@ -94,6 +94,10 @@ public:
 
 	bool SendFrame(AVPacket *pkt)
 	{
+		if (NULL == pkt)
+		{
+			return false;
+		}
 		///ÍÆÁ÷
 		pkt->pts = av_rescale_q(pkt->pts, video_codec_ctx->time_base, vstream->time_base);
 		pkt->dts = av_rescale_q(pkt->dts, video_codec_ctx->time_base, vstream->time_base);

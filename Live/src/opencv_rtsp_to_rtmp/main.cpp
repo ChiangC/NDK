@@ -9,7 +9,7 @@ extern "C"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 }
-//预处理失败，找不到头文件；编译失败语法错误；链接失败，找不到lib文件；执行失败，找不到动态链接库。
+//预处理失败，找不到头文件；编译失败，语法错误；链接失败，找不到lib文件；执行失败，找不到动态链接库。
 using namespace cv;
 using namespace std;
 
