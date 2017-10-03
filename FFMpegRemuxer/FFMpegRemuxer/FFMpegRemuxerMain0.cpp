@@ -121,6 +121,7 @@ int main0(int argc, char **argv)
 		in_stream = ifmt_ctx->streams[pkt.stream_index];
 		out_stream = ofmt_ctx->streams[pkt.stream_index];
 
+		//不同时间基之间的转换,把时间戳从一个时基调整到另外一个时基
 		//copy packet
 		pkt.pts = av_rescale_q_rnd(pkt.pts, in_stream->time_base, out_stream->time_base, 
 			(AVRounding)(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));

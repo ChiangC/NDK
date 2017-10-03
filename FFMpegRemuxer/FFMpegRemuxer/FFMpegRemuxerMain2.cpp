@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 			printf("Error: Could not allocate output stream.\n");
 			goto end;
 		}
-		//给couStream 生成AVCodecContext
+		//给outStream 生成AVCodecContext
 		ret = avcodec_copy_context(outStream->codec, inStream->codec);
 		outStream->codec->codec_tag = 0;//?
 		//如果有global header就设置globalheader的值
@@ -140,6 +140,7 @@ int main(int argc, char **argv)
 		in_stream = ifmt_ctx->streams[pkt.stream_index];
 		out_stream = ofmt_ctx->streams[pkt.stream_index];
 
+		//不同时间基之间的转换,把时间戳从一个时基调整到另外一个时基
 		//copy packet
 		pkt.pts = av_rescale_q_rnd(pkt.pts, in_stream->time_base, out_stream->time_base,
 			(AVRounding)(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX));
