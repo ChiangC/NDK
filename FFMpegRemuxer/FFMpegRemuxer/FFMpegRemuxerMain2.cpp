@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 		}
 		//给outStream 生成AVCodecContext
 		ret = avcodec_copy_context(outStream->codec, inStream->codec);
-		outStream->codec->codec_tag = 0;//?
+		outStream->codec->codec_tag = 0;//表示不要进行编码直接把文件写进去
 		//如果有global header就设置globalheader的值
 		if (ofmt_ctx->oformat->flags & AVFMT_GLOBALHEADER)
 		{
@@ -161,6 +161,8 @@ int main(int argc, char **argv)
 		}
 
 		//向输出文件写入packet的值
+		//也可以用av_write_frame,但是用av_interleaved_write_frame的好处就是：
+		//该函数会自动缓冲,根据pts、dts进行排序发送,且会把pakcet的空间释放掉
 		ret = av_interleaved_write_frame(ofmt_ctx, &pkt);
 		if (ret < 0)
 		{

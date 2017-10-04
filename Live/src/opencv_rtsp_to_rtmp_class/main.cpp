@@ -137,8 +137,8 @@ int main(int argc, char** argv)
 		codec_ctx->height = srcH;
 		codec_ctx->time_base = {1, fps};//pts以什么数进行计算
 		codec_ctx->framerate = { fps, 1 };//帧率
-		codec_ctx->gop_size = 50;//画面组的大小，多少帧一个关键帧
-		codec_ctx->max_b_frames = 0;//B帧
+		codec_ctx->gop_size = 50;//画面组的大小，多少帧一个关键帧；设置得越大，同等质量的画面压缩率越高
+		codec_ctx->max_b_frames = 0;//B帧；B帧为0，则pts和dts一致。
 		codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
 		
 		//d.打开编码器上下文
@@ -154,6 +154,7 @@ int main(int argc, char** argv)
 		
 		///5.封装器和视频流配置
 		//a.创建输出封装器上下文
+		//这个函数的format_name参数，如果是输出文件可以不传，因为是输出流所以要传(流媒体判断不出来)
 		ret = avformat_alloc_output_context2(&ofmt_ctx, 0, "flv", outUrl);
 		if (ret != 0)
 		{
@@ -167,7 +168,7 @@ int main(int argc, char** argv)
 		{
 			throw exception("avformat_new_stream failed");
 		}
-		vstream->codecpar->codec_tag = 0;
+		vstream->codecpar->codec_tag = 0;//指定编码格式不要进行设置
 		//c.从编码器复制参数
 		avcodec_parameters_from_context(vstream->codecpar, codec_ctx);
 		av_dump_format(ofmt_ctx, 0, outUrl, 1);
@@ -218,7 +219,7 @@ int main(int argc, char** argv)
 			uint8_t *indata[AV_NUM_DATA_POINTERS] = {0};
 			//bgrbgrbgr
 			//plane indata[0]:bbbbb indata[1]:ggggg indata[]:rrrrr
-			indata[0] = frame.data;
+			indata[0] = frame.data;//bgrbgrbgr在这里是这种方式
 			int insize[AV_NUM_DATA_POINTERS] = {0};
 			insize[0] = frame.cols * frame.elemSize();//一行(宽)数据的字节数
 			int h = sws_scale(sws_ctx, indata, insize, 0, frame.rows,//源数据
@@ -233,6 +234,7 @@ int main(int argc, char** argv)
 			///7.h264编码
 			yuv_frame->pts = vpts;
 			vpts++;
+			//内部使用多线程进行编码
 			ret = avcodec_send_frame(codec_ctx, yuv_frame);
 			if (ret != 0)
 			{
@@ -247,9 +249,11 @@ int main(int argc, char** argv)
 			}
 			
 			///8.推流
+			//把pkt.pts由基于codec_ctx->time_base转换为基于vstream->time_base的pts.
 			pkt.pts = av_rescale_q(pkt.pts, codec_ctx->time_base, vstream->time_base);
 			pkt.dts = av_rescale_q(pkt.dts, codec_ctx->time_base, vstream->time_base);
-			ret = av_interleaved_write_frame(ofmt_ctx, &pkt);
+			//av_write_frame(ofmt_ctx, &pkt);这个函数不进行排序
+			ret = av_interleaved_write_frame(ofmt_ctx, &pkt);//这个函数的好处：第一、内部有缓冲排序；第二、每次不管成功与否都会释放packet内部的数据；
 			if (ret == 0)
 			{
 				cout << "#" << flush;
@@ -277,6 +281,9 @@ int main(int argc, char** argv)
 		if (codec_ctx)
 		{
 			avio_closep(&ofmt_ctx->pb);
+			//或者使用下面的方式：
+			/*avio_close(ofmt_ctx->pb);
+			ofmt_ctx->pb = NULL;*/
 			avcodec_free_context(&codec_ctx);
 		}
 
