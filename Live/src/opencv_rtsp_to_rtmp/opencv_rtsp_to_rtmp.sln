@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opencv_rtsp_to_rtmp", "opencv_rtsp_to_rtmp.vcxproj", "{F688052F-ED5A-4E4D-9DBA-50EAE6E68C00}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opencv_rtsp_to_rtmp_class", "..\opencv_rtsp_to_rtmp_class\opencv_rtsp_to_rtmp_class.vcxproj", "{E923093A-382C-4DD2-A0AD-47634D0B79D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -15,6 +17,10 @@ Global
 		{F688052F-ED5A-4E4D-9DBA-50EAE6E68C00}.Debug|Win32.Build.0 = Debug|Win32
 		{F688052F-ED5A-4E4D-9DBA-50EAE6E68C00}.Release|Win32.ActiveCfg = Release|Win32
 		{F688052F-ED5A-4E4D-9DBA-50EAE6E68C00}.Release|Win32.Build.0 = Release|Win32
+		{E923093A-382C-4DD2-A0AD-47634D0B79D5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E923093A-382C-4DD2-A0AD-47634D0B79D5}.Debug|Win32.Build.0 = Debug|Win32
+		{E923093A-382C-4DD2-A0AD-47634D0B79D5}.Release|Win32.ActiveCfg = Release|Win32
+		{E923093A-382C-4DD2-A0AD-47634D0B79D5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F688052F-ED5A-4E4D-9DBA-50EAE6E68C00}</ProjectGuid>
+    <ProjectGuid>{E923093A-382C-4DD2-A0AD-47634D0B79D5}</ProjectGuid>
     <RootNamespace>opencv_rtsp_to_rtmp</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -69,6 +69,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_class.cpp" />
+    <ClCompile Include="main_original.cpp" />
+    <ClCompile Include="XMediaEncode.cpp" />
+    <ClCompile Include="XRtmp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="XMediaEncode.h" />
+    <ClInclude Include="XRtmp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
