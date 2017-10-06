@@ -70,8 +70,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FFMpegRemuxerMain0.cpp" />
     <ClCompile Include="FFMpegRemuxerMain1.cpp" />
-    <ClCompile Include="FFMpegRemuxerMain.cpp" />
+    <ClCompile Include="FFMpegRemuxerMain2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />

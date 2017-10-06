@@ -15,10 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FFMpegRemuxerMain1.cpp">
+    <ClCompile Include="FFMpegRemuxerMain0.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="FFMpegRemuxerMain.cpp">
+    <ClCompile Include="FFMpegRemuxerMain2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FFMpegRemuxerMain1.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
