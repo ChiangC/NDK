@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 
+
 using namespace std;
 
 class CXAudioRecord :public XAudioRecord
@@ -56,9 +57,9 @@ public:
 			{
 				continue;
 			}
-
+			long long pts = GetCurTime();//微秒
 			//已经读取一帧
-			Push(XData(buf, readSize));
+			Push(XData(buf, readSize, pts));
 			/*XData d;
 			d.data = buf;
 			d.size = readSize;
@@ -93,15 +94,16 @@ public:
 		//开始录制音频
 		io = audio_input->start();
 		if (!io) return false;
-		QThread::start();
-		isExit = false;
+		/*QThread::start();
+		isExit = false;*/
 		return true;
 	}
 
-	bool Stop()
+	void Stop()
 	{
-		isExit = true;
-		wait();//等待当前线程退出
+		XDataThread::Stop();
+		//isExit = true;
+		//wait();//等待当前线程退出
 		if (audio_input)
 		{
 			audio_input->stop();
@@ -119,7 +121,7 @@ public:
 	QIODevice *io = NULL;
 };
 
-XAudioRecord* Get(XAUDIOTYPE type, unsigned char index)
+XAudioRecord *XAudioRecord::Get(XAUDIOTYPE type, unsigned char index)
 {
 	static CXAudioRecord record[255];
 	return &record[index];

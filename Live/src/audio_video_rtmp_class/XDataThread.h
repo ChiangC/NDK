@@ -1,5 +1,6 @@
 #pragma once
 #include <QThread>
+#include <qmutex.h>
 #include "XData.h"
 #include <list>
 
@@ -18,8 +19,10 @@ public:
 	//启动线程
 	virtual bool Start();
 
-	//退出线程，并等待线程退出
+	//退出线程，并等待线程退出(阻塞的函数)
 	virtual void Stop();
+
+	virtual void Clear();
 
 	XDataThread();
 	virtual ~XDataThread();

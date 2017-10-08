@@ -1,5 +1,15 @@
 #include "XDataThread.h"
 
+void XDataThread::Clear()
+{
+	mutex.lock();
+	while (!datas.empty())
+	{
+		datas.front().Drop();
+		datas.pop_front();
+	}
+	mutex.unlock();
+}
 
 //在列表结尾插入
 void XDataThread::Push(XData d)
@@ -37,7 +47,7 @@ bool XDataThread::Start()
 	return true;
 }
 
-//退出线程，并等待线程退出
+//退出线程，并等待线程退出(阻塞)
 void XDataThread::Stop()
 {
 	isExit = true;

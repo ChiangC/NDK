@@ -25,13 +25,14 @@ public:
 				continue;
 			}
 
-			if (!frame)
+			if (frame.empty())
 			{
 				msleep(1);
 				continue;
 			}
-			//确保数据是连续的；
-			XData d((char*)frame.data, frame.cols*frame.rows*frame.elemSize(););
+
+			//确保数据是连续的；不连续的话就要，通过frame一行一行拷贝
+			XData d((char*)frame.data, frame.cols*frame.rows*frame.elemSize(), GetCurTime());
 			Push(d);
 		}
 	}
@@ -76,6 +77,8 @@ public:
 
 	void Stop()
 	{
+		XDataThread::Stop();
+
 		if (camera.isOpened())
 		{
 			camera.release();

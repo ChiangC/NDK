@@ -16,7 +16,7 @@ public:
 	int sampleByte = 2;//样本字节大小
 	int nbSamples = 1024;//一帧音频每个通道的样本数量
 
-	static XAudioRecord* Get(XAUDIOTYPE type = X_AUDIO_QT,unsigned char index = 0);
+	static XAudioRecord *Get(XAUDIOTYPE type = X_AUDIO_QT,unsigned char index = 0);
 
 	//调用者清理空间
 	//virtual XData Pop() = 0;
@@ -25,7 +25,7 @@ public:
 	virtual bool Init() = 0;
 
 	//停止录制
-	virtual bool Stop() = 0;
+	//virtual bool Stop() = 0;
 
 	virtual ~XAudioRecord();
 

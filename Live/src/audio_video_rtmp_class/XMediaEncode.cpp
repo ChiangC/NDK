@@ -9,7 +9,8 @@ extern "C"
 #pragma comment(lib, "swscale.lib")
 #pragma comment(lib, "avcodec.lib")
 #pragma comment(lib, "avformat.lib")
-#pragma comment(lib, "swresample.h")
+#pragma comment(lib, "avutil.lib")
+#pragma comment(lib, "swresample.lib")
 
 #include <iostream>
 using namespace std;
@@ -86,8 +87,8 @@ public :
 		}
 
 		vpts = 0;
-		av_packet_unref(&packet);
-		av_packet_unref(&a_packet);
+		av_packet_unref(&vpacket);
+		av_packet_unref(&apacket);
    }
 
    bool InitScale()
@@ -119,14 +120,15 @@ public :
    }
 
 
-    AVFrame* RGBToYUV(char *rgb)
+    XData RGBToYUV(XData d)
     {
+		XData dResult;
         //rgb to yuv
         //输入的数据结构
         uint8_t *indata[AV_NUM_DATA_POINTERS] = { 0 };
         //bgrbgrbgr
         //plane indata[0]:bbbbb indata[1]:ggggg indata[2]:rrrrr
-        indata[0] = (uint8_t *)rgb;
+        indata[0] = (uint8_t *)d.data;
         int insize[AV_NUM_DATA_POINTERS] = { 0 };
         //一行(宽)数据的字节数
         insize[0] = inWidth * inPixSize;
@@ -135,9 +137,18 @@ public :
             yuv->data, yuv->linesize);
 
         if (h <= 0){
-            return NULL;
+            return dResult;
         }
-        return yuv;
+		dResult.data = (char*)yuv;
+		int *p = yuv->linesize;
+		yuv->pts = d.pts;
+		dResult.pts = d.pts;
+		while ((*p))
+		{
+			dResult.size += (*p)*outHeight;
+			p++;
+		}
+        return dResult;
     }
 
     bool InitVideoCodec()
@@ -169,19 +180,18 @@ public :
 		video_codec_ctx->bit_rate = 50 * 1024 * 8;//压缩后每秒视频的bit位大小,通过压缩率控制视频的码率；50KB
 		video_codec_ctx->width = outWidth;
 		video_codec_ctx->height = outHeight;
-		video_codec_ctx->time_base = { 1, fps };//pts以什么数进行计算
+		//video_codec_ctx->time_base = { 1, fps };//pts以什么数进行计算
 		video_codec_ctx->framerate = { fps, 1 };//帧率
 		video_codec_ctx->gop_size = 50;//画面组的大小，多少帧一个关键帧
 		video_codec_ctx->max_b_frames = 0; //B帧
 		video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
-
 
 		return OpenCodec(&video_codec_ctx);
     }
 
 	bool InitAudioCodec()
 	{
-		///4.初始化音频编码器
+		///4.Init audio codec context
 		if (!(audio_codec_ctx = CreateCodec(AV_CODEC_ID_AAC)))
 		{
 			return false;
@@ -192,43 +202,66 @@ public :
 		audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_FLTP;
 		audio_codec_ctx->channels = channels;
 		audio_codec_ctx->channel_layout = av_get_default_channel_layout(channels);
-
+		
 		return OpenCodec(&audio_codec_ctx);
 	}
 
-	AVPacket* EncodeVideo(AVFrame* frame)
+	XData EncodeVideo(XData frame)
 	{
-		av_packet_unref(&packet);
+		XData r;
+
+		av_packet_unref(&vpacket);
+
+		if (frame.size <= 0 || !frame.data)return r;
+
 		///h264编码
-		yuv->pts = vpts;
-		vpts++;
+		/*yuv->pts = vpts;
+		vpts++;*/
 
-		int ret = avcodec_send_frame(video_codec_ctx, yuv);
+		int ret = avcodec_send_frame(video_codec_ctx, (AVFrame*)frame.data);
 		if (ret != 0){
-			return NULL;
+			return r;
 		}
 
-		ret = avcodec_receive_packet(video_codec_ctx, &packet);
-		if (ret != 0 || packet.size <=0){
-			return NULL;
+		ret = avcodec_receive_packet(video_codec_ctx, &vpacket);
+		if (ret != 0 || vpacket.size <=0){
+			return r;
 		}
-
-		return &packet;
+		r.data = (char*)&vpacket;
+		r.size = vpacket.size;
+		r.pts = frame.pts;
+		return r;
 	}
 
-	AVPacket* EncodeAudio(AVFrame *frame)
+	long long lasta = -1;
+	XData EncodeAudio(XData d)
 	{
-		pcm->pts = apts;
-		apts += av_rescale_q(pcm->nb_samples, { 1, sampleRate }, video_codec_ctx->time_base);
+		XData r;
+		if (d.size <= 0 || !d.data)
+		{
+			return r;
+		}
 
-		int ret = avcodec_send_frame(video_codec_ctx, pcm);
-		if (ret != 0)return NULL;
+		AVFrame *frame = (AVFrame*)d.data;
+		if (lasta == frame->pts)
+		{
+			frame->pts += 1200;//至少大于1000，否则，会因为精度省略掉
+		}
+		lasta = frame->pts;
 
-		av_packet_unref(&a_packet);
-		ret = avcodec_receive_packet(video_codec_ctx, &a_packet);
-		if (ret != 0){ return NULL; }
-		cout << a_packet.size << " " << flush;
-		return &a_packet;
+		//frame->pts = av_rescale_q(frame->pts, { 1, 1000000 }, audio_codec_ctx->time_base);
+
+		int ret = avcodec_send_frame(audio_codec_ctx, frame);
+		if (ret != 0)return r;
+
+		av_packet_unref(&apacket);
+		ret = avcodec_receive_packet(audio_codec_ctx, &apacket);
+		if (ret != 0){ return r; }
+		/*cout << a_packet.size << " " << flush;*/
+		r.data = (char*)&apacket;
+		r.size = apacket.size;
+		r.pts = d.pts;
+		return r;
 	}
 
 	//**********************************************************//
@@ -272,18 +305,23 @@ public :
 		return true;
 	}
 
-	AVFrame* Resample(char *data)
+	XData Resample(XData xData)
 	{
+		XData dResult;
 		//重采样源数据
 		const uint8_t *indata[AV_NUM_DATA_POINTERS] = {0};
-		indata[0] = (uint8_t *)data;
+		indata[0] = (uint8_t *)xData.data;
 		int len = swr_convert(aswr_ctx, pcm->data, pcm->nb_samples,//输出参数，输出存储地址和样本数量
 			indata, pcm->nb_samples);
 		if (len <= 0)
 		{
-			return NULL;
+			return dResult;
 		}
-		return pcm;
+		pcm->pts = xData.pts;
+		dResult.data = (char*)pcm;
+		dResult.size = pcm->nb_samples*pcm->channels * 2;
+		dResult.pts = xData.pts;
+		return dResult;
 	}
 
 private:
@@ -292,7 +330,7 @@ private:
 		AVCodec *codec = avcodec_find_encoder(id);
 		if (!codec)
 		{
-			cout << "avcodec_find_encoder AV_CODEC_ID_AAC failed!" << endl;
+			cout << "avcodec_find_encoder failed!" << endl;
 			return NULL;
 		}
 
@@ -306,7 +344,8 @@ private:
 
 		codec_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 		codec_ctx->thread_count = XGetCpuNum();
-	
+		codec_ctx->time_base = { 1, 1000000 };
+
 		return codec_ctx;
 	}
 
@@ -330,8 +369,8 @@ private:
 	AVFrame *yuv = NULL;
 	AVFrame *pcm = NULL;
 
-	AVPacket packet;//视频帧
-	AVPacket a_packet;//音频帧
+	AVPacket vpacket;//视频帧
+	AVPacket apacket;//音频帧
 
 	int vpts = 0;
 	int apts = 0;

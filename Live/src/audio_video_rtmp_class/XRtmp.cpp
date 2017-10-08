@@ -40,11 +40,12 @@ public:
 	}
 
 	//Add video or audio stream
-	bool AddStream(const AVCodecContext *codec_ctx)
+	//return stream index when success, -1 when failed.
+	int AddStream(const AVCodecContext *codec_ctx)
 	{
 		if (!codec_ctx)
 		{
-			return false;
+			return -1;
 		}
 		
 
@@ -52,7 +53,7 @@ public:
 		AVStream *stream = avformat_new_stream(ofmt_ctx, NULL);
 		if (!stream){
 			cout<<"avformat_new_stream failed"<<endl;
-			return false;
+			return -1;
 		}
 
 		stream->codecpar->codec_tag = 0;
@@ -71,6 +72,7 @@ public:
 			audio_codec_ctx = codec_ctx;
 			astream = stream;
 		}
+		return stream->index;
 	}
 
 	bool SendHeader()
@@ -97,12 +99,14 @@ public:
 		return true;
 	}
 
-	bool SendFrame(AVPacket *pkt)
+	bool SendFrame(XData d, int streamIndex)
 	{
-		if (!pkt || pkt->size <= 0 || !pkt->data)
+		if (!d.data || d.size <= 0)
 		{
 			return false;
 		}
+		AVPacket *pkt = (AVPacket*)d.data;
+		pkt->stream_index = streamIndex;
 
 		AVRational stime_base;
 		AVRational dtime_base;
@@ -120,14 +124,11 @@ public:
 		else{
 			return false;
 		}
-		///ÍÆÁ÷
+		///push stream
 		pkt->pts = av_rescale_q(pkt->pts, stime_base, dtime_base);
 		pkt->dts = av_rescale_q(pkt->dts, stime_base, dtime_base);
 		pkt->duration = av_rescale_q(pkt->duration, stime_base, dtime_base);
 		int ret = av_interleaved_write_frame(ofmt_ctx, pkt);
-		/*if (ret == 0){
-			cout << "#" << flush;
-		}*/
 		return true;
 	}
 

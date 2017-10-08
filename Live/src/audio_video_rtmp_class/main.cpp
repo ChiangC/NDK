@@ -7,18 +7,6 @@
 #include "XAudioRecord.h"
 #include "XVideoCapture.h"
 
-
-//extern "C"
-//{
-//#include <libswresample/swresample.h>
-//#include <libavcodec/avcodec.h>
-//#include <libavformat/avformat.h>
-//}
-//#pragma comment(lib, "swresample.lib")
-//#pragma comment(lib, "avutil.lib")
-//#pragma comment(lib, "avcodec.lib")
-//#pragma comment(lib, "avformat.lib")
-
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -42,6 +30,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	cout << "Open camera success." << endl;
+	xvc->Start();
 
 	//1.qt音频开始录制
 	XAudioRecord *audio_record = XAudioRecord::Get();
@@ -54,6 +43,7 @@ int main(int argc, char *argv[])
 		cout << "XAudioRecord Init failed." << endl;
 		return -1;
 	}
+	audio_record->Start();
 
 	//音视频编码类
 	XMediaEncode *xMediaEncode = XMediaEncode::Get(0);
@@ -102,13 +92,17 @@ int main(int argc, char *argv[])
 	}
 
 	//b.添加视频流
-	if (!xRtmp->AddStream(xMediaEncode->video_codec_ctx))
+	int vindex = 0;
+	vindex = xRtmp->AddStream(xMediaEncode->video_codec_ctx);
+	if (vindex < 0)
 	{
 		return -1;
 	}
 
 	//b.添加音频流
-	if (!xRtmp->AddStream(xMediaEncode->audio_codec_ctx))
+	int aindex = 0;
+	aindex = xRtmp->AddStream(xMediaEncode->audio_codec_ctx);
+	if (aindex < 0)
 	{
 		return -1;
 	}
@@ -119,29 +113,58 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	//clear datas 
+	xvc->Clear();
+	audio_record->Clear();
+	//start time
+	long long beginTime = GetCurTime();
+
 	/*char buf[4096] = {0};*/
 	for (;;)
 	{
 		//一次读取一帧音频
-		XData d = audio_record->Pop();
-		if (d.size <= 0)
+		XData ad = audio_record->Pop();
+		XData vd = xvc->Pop();
+		if (ad.size <= 0 && vd.size <= 0)
 		{
 			QThread::msleep(1);
 			continue;
 		}
 
+		//处理音频
 		//已经读一帧源数据
-		//重采样源数据
-		AVFrame *pcm = xMediaEncode->Resample(d.data);
-		d.Drop();//用完就清理空间
+		if (ad.size > 0) {
+			//重采样源数据
+			ad.pts = ad.pts - beginTime;
+			XData xData = xMediaEncode->Resample(ad);
+			ad.Drop();//用完就清理空间
 
-		AVPacket *pkt = xMediaEncode->EncodeAudio(pcm);
+			XData pkt = xMediaEncode->EncodeAudio(xData);
+			if (pkt.size > 0) {
+				////推流
+				if (xRtmp->SendFrame(pkt, aindex))
+				{
+					cout << "#" << flush;
+				}
+			}
+		}
+		
+		//处理视频
+		if (vd.size > 0)
+		{
+			vd.pts = vd.pts - beginTime;
+			XData yuv = xMediaEncode->RGBToYUV(vd);
+			vd.Drop();
 
-		if (!pkt) continue;
-
-		////推流
-		xRtmp->SendFrame(pkt);
-
+			XData pkt = xMediaEncode->EncodeVideo(yuv);
+			if (pkt.size > 0) {
+				////推流
+				if (xRtmp->SendFrame(pkt, vindex))
+				{
+					cout << "%" << flush;
+				}
+			}
+		}
 		
 	}
 

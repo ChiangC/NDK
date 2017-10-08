@@ -1,4 +1,5 @@
 #pragma once
+#include "XData.h"
 
 struct AVFrame;
 struct AVPacket;
@@ -32,23 +33,29 @@ public :
 
     static XMediaEncode * Get(unsigned char index = 0);
 
-    virtual AVFrame* RGBToYUV(char *rgb) = 0;
+	//返回值不需要调用者清理
+    virtual XData RGBToYUV(XData xData) = 0;
 
+	//初始化像素格式转换上下文
     virtual bool InitScale() = 0;
 
+	//初始化音频采样上下文
 	virtual bool InitResample() = 0;
 
-	virtual AVFrame* Resample(char *pcm) = 0;
+	//返回值不需要调用者清理
+	virtual XData Resample(XData d) = 0;
 
+	//视频编码器初始化
     virtual bool InitVideoCodec() = 0;
 
+	//音频编码器初始化
 	virtual bool InitAudioCodec() = 0;
 
 	//视频编码,返回值无需用户清理
-	virtual AVPacket* EncodeVideo(AVFrame* frame) = 0;
+	virtual XData EncodeVideo(XData xData) = 0;
 
 	//音频编码,返回值无需用户清理
-	virtual AVPacket* EncodeAudio(AVFrame *frame) = 0;
+	virtual XData EncodeAudio(XData xData) = 0;
     
 	virtual ~XMediaEncode();
 
