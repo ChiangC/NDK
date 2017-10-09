@@ -31,7 +31,17 @@ public:
 				continue;
 			}
 
-			//È·±£Êý¾ÝÊÇÁ¬ÐøµÄ£»²»Á¬ÐøµÄ»°¾ÍÒª£¬Í¨¹ýframeÒ»ÐÐÒ»ÐÐ¿½±´
+			fmutex.lock();
+			for(int i = 0; i < filters.size(); i++)
+			{
+			    Mat dest;
+			    filters[i]->Filter(&frame, &dest);
+			    frame = dest;
+			}
+
+			fmutex.unlock();
+
+			//È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½Òªï¿½ï¿½Í¨ï¿½ï¿½frameÒ»ï¿½ï¿½Ò»ï¿½Ð¿ï¿½ï¿½ï¿½
 			XData d((char*)frame.data, frame.cols*frame.rows*frame.elemSize(), GetCurTime());
 			Push(d);
 		}

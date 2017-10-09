@@ -1,6 +1,8 @@
 #pragma once
 #include "XData.h"
 #include "XDataThread.h"
+#include "XFilter.h"
+#include <vector>
 
 class XVideoCapture :public XDataThread
 {
@@ -17,9 +19,17 @@ public:
 
 	virtual void Stop() = 0;
 
+    void AddFilter(XFilter *filter)
+    {
+        fmutext.lock();
+        filters.push_back(filter);
+        fmutext.unlock();
+    }
 	virtual ~XVideoCapture();
 
 protected:
+    QMutex fmutext;
+    std::vector<XFilter*> filters;
 	XVideoCapture();
 };
 
