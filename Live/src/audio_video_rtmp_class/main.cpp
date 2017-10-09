@@ -6,6 +6,7 @@
 #include "XRtmp.h"
 #include "XAudioRecord.h"
 #include "XVideoCapture.h"
+#include "XFilter.h"
 
 using namespace std;
 
@@ -19,11 +20,14 @@ int main(int argc, char *argv[])
 
 	int sampleRate = 44100;
 	int channels = 2;
-	int sampleByte = 2;//×Ö½ÚÊý
+	int sampleByte = 2;//ï¿½Ö½ï¿½ï¿½ï¿½
 	int nbSamples = 1024;
 
-	//´ò¿ªÉãÏñ»ú
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	XVideoCapture *xvc = XVideoCapture::Get(0);
+	XFilter *xFilter = XFilter::Get();
+    xFilter->Set("d", 9);
+
 	if (!xvc->Init(0))
 	{
 		cout << "Open camera failed." << endl;
@@ -32,7 +36,7 @@ int main(int argc, char *argv[])
 	cout << "Open camera success." << endl;
 	xvc->Start();
 
-	//1.qtÒôÆµ¿ªÊ¼Â¼ÖÆ
+	//1.qtï¿½ï¿½Æµï¿½ï¿½Ê¼Â¼ï¿½ï¿½
 	XAudioRecord *audio_record = XAudioRecord::Get();
 	audio_record->sampleRate = sampleRate;
 	audio_record->channels = channels;
@@ -45,10 +49,10 @@ int main(int argc, char *argv[])
 	}
 	audio_record->Start();
 
-	//ÒôÊÓÆµ±àÂëÀà
+	//ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	XMediaEncode *xMediaEncode = XMediaEncode::Get(0);
-	//2.³õÊ¼»¯¸ñÊ½×ª»»ÉÏÏÂÎÄ
-	//³õÊ¼»¯ÊÓÆµÊä³öµÄÊý¾Ý½á¹¹
+	//2.ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹
 	xMediaEncode->inWidth = xvc->width;
 	xMediaEncode->inHeight = xvc->height;
 	xMediaEncode->outWidth = xvc->width;
@@ -60,7 +64,7 @@ int main(int argc, char *argv[])
 	}
 	cout << "Init video scale success." << endl;
 
-	//2.ÒôÆµÖØ²ÉÑù£¬ÉÏÏÂÎÄ³õÊ¼»¯
+	//2.ï¿½ï¿½Æµï¿½Ø²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½Ê¼ï¿½ï¿½
 	xMediaEncode->channels = channels;
 	xMediaEncode->nbSamples = 1024;
 	xMediaEncode->sampleRate = sampleRate;
@@ -71,27 +75,27 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	///4.³õÊ¼»¯ÊÓÆµ±àÂëÆ÷
+	///4.ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (!xMediaEncode->InitVideoCodec())
 	{
 		return -1;
 	}
 
-	///4.³õÊ¼»¯ÒôÆµ±àÂëÆ÷
+	///4.ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (!xMediaEncode->InitAudioCodec())
 	{
 		return -1;
 	}
 
-	//5.Êä³ö·â×°Æ÷ºÍÒôÆµÁ÷ÅäÖÃ
-	//a.´´½¨Êä³ö·â×°Æ÷ÉÏÏÂÎÄ
+	//5.ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//a.ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	XRtmp *xRtmp = XRtmp::Get(0);
 	if (!xRtmp->Init(outUrl))
 	{
 		return -1;
 	}
 
-	//b.Ìí¼ÓÊÓÆµÁ÷
+	//b.ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½
 	int vindex = 0;
 	vindex = xRtmp->AddStream(xMediaEncode->video_codec_ctx);
 	if (vindex < 0)
@@ -99,7 +103,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	//b.Ìí¼ÓÒôÆµÁ÷
+	//b.ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½
 	int aindex = 0;
 	aindex = xRtmp->AddStream(xMediaEncode->audio_codec_ctx);
 	if (aindex < 0)
@@ -107,7 +111,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	////Ð´Èë·â×°Í·
+	////Ð´ï¿½ï¿½ï¿½×°Í·
 	if (!xRtmp->SendHeader())
 	{
 		return -1;
@@ -122,7 +126,7 @@ int main(int argc, char *argv[])
 	/*char buf[4096] = {0};*/
 	for (;;)
 	{
-		//Ò»´Î¶ÁÈ¡Ò»Ö¡ÒôÆµ
+		//Ò»ï¿½Î¶ï¿½È¡Ò»Ö¡ï¿½ï¿½Æµ
 		XData ad = audio_record->Pop();
 		XData vd = xvc->Pop();
 		if (ad.size <= 0 && vd.size <= 0)
@@ -131,17 +135,17 @@ int main(int argc, char *argv[])
 			continue;
 		}
 
-		//´¦ÀíÒôÆµ
-		//ÒÑ¾­¶ÁÒ»Ö¡Ô´Êý¾Ý
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµ
+		//ï¿½Ñ¾ï¿½ï¿½ï¿½Ò»Ö¡Ô´ï¿½ï¿½ï¿½ï¿½
 		if (ad.size > 0) {
-			//ÖØ²ÉÑùÔ´Êý¾Ý
+			//ï¿½Ø²ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½
 			ad.pts = ad.pts - beginTime;
 			XData xData = xMediaEncode->Resample(ad);
-			ad.Drop();//ÓÃÍê¾ÍÇåÀí¿Õ¼ä
+			ad.Drop();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½
 
 			XData pkt = xMediaEncode->EncodeAudio(xData);
 			if (pkt.size > 0) {
-				////ÍÆÁ÷
+				////ï¿½ï¿½ï¿½ï¿½
 				if (xRtmp->SendFrame(pkt, aindex))
 				{
 					cout << "#" << flush;
@@ -149,7 +153,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		//´¦ÀíÊÓÆµ
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµ
 		if (vd.size > 0)
 		{
 			vd.pts = vd.pts - beginTime;
@@ -158,7 +162,7 @@ int main(int argc, char *argv[])
 
 			XData pkt = xMediaEncode->EncodeVideo(yuv);
 			if (pkt.size > 0) {
-				////ÍÆÁ÷
+				////ï¿½ï¿½ï¿½ï¿½
 				if (xRtmp->SendFrame(pkt, vindex))
 				{
 					cout << "%" << flush;
