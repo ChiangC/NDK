@@ -19,6 +19,8 @@ public:
 
 	virtual bool SendFrame(XData pkt, int streamIndex = 0) = 0;
 
+    virtual void Close() = 0;
+
 	virtual ~XRtmp();
 
 protected:

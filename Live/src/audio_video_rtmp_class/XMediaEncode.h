@@ -56,7 +56,9 @@ public :
 
 	//音频编码,返回值无需用户清理
 	virtual XData EncodeAudio(XData xData) = 0;
-    
+
+    virtual void Close() = 0;
+
 	virtual ~XMediaEncode();
 
 	//编码器上下文

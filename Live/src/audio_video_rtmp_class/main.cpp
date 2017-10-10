@@ -172,7 +172,11 @@ int main(int argc, char *argv[])
 		
 	}
 
-
+    XController::Get()->cameraIndex = 0;
+    XController::Get()->outUrl = outUrl;
+    XController::Get()->Start();
+    long long beginTime = GetCurTime();
+    XController::Get()->wait();
 
 	return a.exec();
 }
