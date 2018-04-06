@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <android/log.h>
 #include <pthread.h>
+#include <assert.h>
 #include "x264/include/x264.h"
 #include "faac/include/faac.h"
 #include "rtmpdump/include/rtmp.h"
@@ -17,6 +18,9 @@
 
 #define LOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO,"FMLive",FORMAT,##__VA_ARGS__);
 #define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"FMLive",FORMAT,##__VA_ARGS__);
+#define NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))
+#define NATIVE_METHOD(className, functionName, signature) \
+{ #functionName, signature, (void*)(className ## _ ## functionName) }
 
 //x264编码输入图像YUV420P
 x264_picture_t pic_in;
@@ -53,11 +57,6 @@ jclass jcls_push_native;
 
 JavaVM *javaVM;
 
-//获取JavaVM
-jint JNI_OnLoad(JavaVM* vm, void* reserved){
-	javaVM = vm;
-	return JNI_VERSION_1_4;//jni1.4以上支持
-}
 
 void throwNativeError(JNIEnv *env,int code){
 	LOGI("%s", "throwNativeError");
@@ -564,7 +563,9 @@ JNIEXPORT void JNICALL Java_com_fmtech_fmlive_jni_PushNative_setVideoOptions
  * Method:    setAudioOptions
  * Signature: (II)V
  */
-JNIEXPORT void JNICALL Java_com_fmtech_fmlive_jni_PushNative_setAudioOptions
+//JNIEXPORT void JNICALL Java_com_fmtech_fmlive_jni_PushNative_setAudioOptions
+//Use dynamic register
+JNIEXPORT void JNICALL native_setAudioOptions
   (JNIEnv *env, jobject jobj, jint sampleRateInHz, jint numChannels){
 	audio_encode_handle = faacEncOpen(sampleRateInHz, numChannels,&inputSamples,&maxOutputBytes);
 	if(!audio_encode_handle){
@@ -590,4 +591,50 @@ JNIEXPORT void JNICALL Java_com_fmtech_fmlive_jni_PushNative_setAudioOptions
 		return;
 	}
 	LOGI("%s","set faac encode configure success");
+
 }
+
+
+static const JNINativeMethod gMethods[] = {
+        {
+                "setAudioOptions","(II)V",(void*)native_setAudioOptions
+        }
+};
+
+static int registerNatives(JNIEnv* env)
+{
+    LOGI("registerNatives begin");
+    jclass  clazz;
+    clazz = (*env) -> FindClass(env, "com/fmtech/fmlive/jni/PushNative");
+
+    if (clazz == NULL) {
+        LOGI("clazz is null");
+        return JNI_FALSE;
+    }
+
+    if ((*env) ->RegisterNatives(env, clazz, gMethods, NELEM(gMethods)) < 0) {
+        LOGI("RegisterNatives error");
+        return JNI_FALSE;
+    }
+
+    return JNI_TRUE;
+}
+
+//获取JavaVM
+jint JNI_OnLoad(JavaVM* vm, void* reserved){
+    javaVM = vm;
+    JNIEnv* env = NULL;
+    jint result = -1;
+
+    if ((*vm)->GetEnv(vm,(void**) &env, JNI_VERSION_1_4) != JNI_OK) {
+        LOGI("ERROR: GetEnv failed\n");
+        return -1;
+    }
+    assert(env != NULL);
+
+    registerNatives(env);
+
+    return JNI_VERSION_1_4;//jni1.4以上支持
+}
+
+

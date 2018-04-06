@@ -19,8 +19,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements LiveStateChangeListener{
-
-	private static final String URL = "rtmp://106.14.33.215:1935/live/fmlive";
+	static{
+		System.loadLibrary("FMLive");
+	}
+	private static final String URL = "rtmp://send3a.douyu.com/live/999565rgCRZQvilF?wsSecret=9fb71b52dea44153c724404de8e9e6df&wsTime=5ac5920e&wsSeek=off&wm=0&tw=0";
 	private LivePusher mLivePusher;
 	private boolean isPushing;
 	private Button mPushBtn;

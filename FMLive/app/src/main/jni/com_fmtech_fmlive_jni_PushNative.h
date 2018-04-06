@@ -60,8 +60,10 @@ JNIEXPORT void JNICALL Java_com_fmtech_fmlive_jni_PushNative_setVideoOptions
  * Method:    setAudioOptions
  * Signature: (II)V
  */
-JNIEXPORT void JNICALL Java_com_fmtech_fmlive_jni_PushNative_setAudioOptions
-  (JNIEnv *, jobject, jint, jint);
+
+//Use dynamic register instead
+/*JNIEXPORT void JNICALL Java_com_fmtech_fmlive_jni_PushNative_setAudioOptions
+  (JNIEnv *, jobject, jint, jint);*/
 
 #ifdef __cplusplus
 }

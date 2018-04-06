@@ -25,7 +25,7 @@ public class LivePusher implements Callback {
 	}
 
 	private void prepare(){
-		VideoParams videoParams = new VideoParams(480,320, CameraInfo.CAMERA_FACING_BACK);
+		VideoParams videoParams = new VideoParams(1280,720, CameraInfo.CAMERA_FACING_BACK);
 		mVideoPusher = new VideoPusher(mSurfaceHolder, videoParams, mPushNative);
 
 		AudioParams audioParams = new AudioParams();

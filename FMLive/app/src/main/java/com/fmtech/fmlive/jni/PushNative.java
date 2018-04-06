@@ -23,9 +23,9 @@ public class PushNative {
 
 	LiveStateChangeListener mLiveStateChangeListener;
 
-	static{
+	/*static{
 		System.loadLibrary("FMLive");
-	}
+	}*/
 	public native void fireVideo(byte[] data);
 
 	public native void fireAudio(byte[] data, int len);
