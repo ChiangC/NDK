@@ -1,0 +1,37 @@
+{
+  "buildFiles": [
+    "F:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\Android.mk",
+    "F:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\Application.mk"
+  ],
+  "cleanCommands": [
+    "E:\\Android_NDK\\android-ndk-r13b\\ndk-build.cmd NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003dF:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\Android.mk NDK_APPLICATION_MK\u003dF:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\Application.mk APP_ABI\u003darmeabi NDK_ALL_ABIS\u003darmeabi NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-17 NDK_OUT\u003dF:/CHIANG_NDK/NDK/FMLive/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003dF:\\CHIANG_NDK\\NDK\\FMLive\\app\\build\\intermediates\\ndkBuild\\debug\\lib clean"
+  ],
+  "libraries": {
+    "FMLive-debug-armeabi": {
+      "buildCommand": "E:\\Android_NDK\\android-ndk-r13b\\ndk-build.cmd NDK_PROJECT_PATH\u003dnull APP_BUILD_SCRIPT\u003dF:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\Android.mk NDK_APPLICATION_MK\u003dF:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\Application.mk APP_ABI\u003darmeabi NDK_ALL_ABIS\u003darmeabi NDK_DEBUG\u003d1 APP_PLATFORM\u003dandroid-17 NDK_OUT\u003dF:/CHIANG_NDK/NDK/FMLive/app/build/intermediates/ndkBuild/debug/obj NDK_LIBS_OUT\u003dF:\\CHIANG_NDK\\NDK\\FMLive\\app\\build\\intermediates\\ndkBuild\\debug\\lib F:/CHIANG_NDK/NDK/FMLive/app/build/intermediates/ndkBuild/debug/obj/local/armeabi/libFMLive.so",
+      "toolchain": "toolchain-armeabi",
+      "abi": "armeabi",
+      "artifactName": "FMLive",
+      "files": [
+        {
+          "src": "F:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\FMLive.c",
+          "flags": "\"-gcc-toolchain\" \"E:/Android_NDK/android-ndk-r13b/build//../toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64\" \"-fpic\" \"-ffunction-sections\" \"-funwind-tables\" \"-fstack-protector-strong\" \"-Wno-invalid-command-line-argument\" \"-Wno-unused-command-line-argument\" \"-no-canonical-prefixes\" \"-fno-integrated-as\" \"-g\" \"-target\" \"armv5te-none-linux-androideabi\" \"-march\u003darmv5te\" \"-mtune\u003dxscale\" \"-msoft-float\" \"-mthumb\" \"-O0\" \"-UNDEBUG\" \"-fno-limit-debug-info\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni/x264/include\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni/faac/include\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni/rtmpdump/include\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni\" \"-DANDROID\" \"-Wa,--noexecstack\" \"-Wformat\" \"-Werror\u003dformat-security\" \"-isystem\" \"E:/Android_NDK/android-ndk-r13b/build//../platforms/android-17/arch-arm/usr/include\""
+        },
+        {
+          "src": "F:\\CHIANG_NDK\\NDK\\FMLive\\app\\src\\main\\jni\\queue.c",
+          "flags": "\"-gcc-toolchain\" \"E:/Android_NDK/android-ndk-r13b/build//../toolchains/arm-linux-androideabi-4.9/prebuilt/windows-x86_64\" \"-fpic\" \"-ffunction-sections\" \"-funwind-tables\" \"-fstack-protector-strong\" \"-Wno-invalid-command-line-argument\" \"-Wno-unused-command-line-argument\" \"-no-canonical-prefixes\" \"-fno-integrated-as\" \"-g\" \"-target\" \"armv5te-none-linux-androideabi\" \"-march\u003darmv5te\" \"-mtune\u003dxscale\" \"-msoft-float\" \"-mthumb\" \"-O0\" \"-UNDEBUG\" \"-fno-limit-debug-info\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni/x264/include\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni/faac/include\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni/rtmpdump/include\" \"-IF:/CHIANG_NDK/NDK/FMLive/app/src/main/jni\" \"-DANDROID\" \"-Wa,--noexecstack\" \"-Wformat\" \"-Werror\u003dformat-security\" \"-isystem\" \"E:/Android_NDK/android-ndk-r13b/build//../platforms/android-17/arch-arm/usr/include\""
+        }
+      ],
+      "output": "F:\\CHIANG_NDK\\NDK\\FMLive\\app\\build\\intermediates\\ndkBuild\\debug\\obj\\local\\armeabi\\libFMLive.so"
+    }
+  },
+  "toolchains": {
+    "toolchain-armeabi": {
+      "cCompilerExecutable": "E:\\Android_NDK\\android-ndk-r13b\\build\\..\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": []
+}
