@@ -227,13 +227,14 @@ JNIEXPORT jint JNICALL Java_com_fmtech_incrementalupdate_BsPatch_patch
     int argc = 4;
     char *argv[4];
 
-    argv[0] = "TimBsPatch";
+    argv[0] = "BsPatch";
     argv[1] = oldPath;
     argv[2] = newPath;
     argv[3] = patchPath;
 
     //如果成功ret等于0
     ret = bspatch_main(argc,argv);
+
     (*env) -> ReleaseStringUTFChars(env, oldPath_jstr, oldPath);
     (*env) -> ReleaseStringUTFChars(env, newPath_jstr, newPath);
     (*env) -> ReleaseStringUTFChars(env, patchPatch_jst, patchPath);
