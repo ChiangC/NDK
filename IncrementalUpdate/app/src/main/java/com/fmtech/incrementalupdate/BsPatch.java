@@ -11,13 +11,11 @@ package com.fmtech.incrementalupdate;
  * <p>
  * ==================================================================
  */
-
 public class BsPatch {
     static {
         System.loadLibrary("BsPatch");
     }
 
     public native static int patch(String oldfile, String newFile, String patchFile);
-
 
 }

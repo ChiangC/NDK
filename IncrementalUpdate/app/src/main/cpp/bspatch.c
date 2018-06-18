@@ -39,7 +39,7 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:
 #include <android/log.h>
 #include <jni.h>
 
-#define TAG "Tim_JNI"
+#define TAG "FMTech"
 #define LOGD(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
 
 static off_t offtin(u_char *buf)
@@ -238,6 +238,7 @@ JNIEXPORT jint JNICALL Java_com_fmtech_incrementalupdate_BsPatch_patch
     (*env) -> ReleaseStringUTFChars(env, oldPath_jstr, oldPath);
     (*env) -> ReleaseStringUTFChars(env, newPath_jstr, newPath);
     (*env) -> ReleaseStringUTFChars(env, patchPatch_jst, patchPath);
+
     return ret;
 
 }

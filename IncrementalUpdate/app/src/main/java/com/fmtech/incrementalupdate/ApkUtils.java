@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.content.FileProvider;
 
 import java.io.File;
@@ -53,8 +54,15 @@ public class ApkUtils {
     public static void installApk(Context context, String apkPath){
         Intent intent = new Intent(Intent.ACTION_VIEW);
         File file = new File(apkPath);
-        Uri apkUri = FileProvider.getUriForFile(context, "com.fmtech.incrementalupdate.fileprovider", file);
-        intent.setDataAndType(Uri.parse("file://"+apkPath), "application/vnd.android.package-archive");
+        Uri apkUri = null;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            apkUri = FileProvider.getUriForFile(context, "com.fmtech.incrementalupdate.fileprovider", file);
+        }else{
+//            apkUri = Uri.parse("file://"+apkPath);
+            apkUri = Uri.fromFile(file);
+        }
+        intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+
         context.startActivity(intent);
     }
 
