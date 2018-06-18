@@ -1,0 +1,39 @@
+Constant:
+testting:
+DEBUG-> false (LinkType 为Production时，需要输Log 时为True); 
+IS_PRODUCTION-> false;
+MOBILE_MENU_IS_LOCAL_LINK-> false;
+
+production:
+DEBUG-> false (LinkType 为Production时，需要输Log 时为True); 
+IS_PRODUCTION-> true;
+MOBILE_MENU_IS_LOCAL_LINK-> false;
+
+android:versionCode="7"
+Phase 1 VersionCode: 7
+Phase 2 VersionCode: 8
+
+<string name="versionName">2.0.0.1</string>
+
+Production: Android_SHKF_eMO!_v2.0.0.1_201306051930.apk
+Testing: Android_SHKF_v2.0.0.1_201306051930.apk
+
+
+Sean versionName: 1.0.3
+
+------------------------------------------------------------------------------
+Version number: SHKANDROID-567
+Test version: 2.0
+Appstore version: 2.0
+
+Pre-cache side menu version：M3_20130705-1.zip
+
+
+
+Production account; 
+tposdemo4 
+Password5
+
+========================================================
+keystore
+password: qwer1234
