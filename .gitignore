@@ -141,3 +141,4 @@ bin/
 local.properties
 Live/src/audio_video_rtmp_class/Debug
 */Debug/
+IncrementalUpdateDiff/IncrementalUpdateDiff/IncrementalUpdateDiff.VC.db
