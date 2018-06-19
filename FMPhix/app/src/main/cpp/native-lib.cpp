@@ -1,12 +1,11 @@
 #include <jni.h>
 #include <string>
 
-extern "C" JNIEXPORT jstring
+extern "C" {
 
-JNICALL
-Java_com_fmtech_fmphix_MainActivity_stringFromJNI(
-        JNIEnv *env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
+JNIEXPORT void JNICALL
+Java_com_fmtech_fmphix_DexManager_replace(JNIEnv *env, jobject instance, jint sdkVersionCode, jobject wrongMethod, jobject rightMethod) {
+
+}
+
 }
