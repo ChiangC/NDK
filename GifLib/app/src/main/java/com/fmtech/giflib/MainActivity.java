@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             int nextFrame = mGifHandler.updateFrame(mBitmap);
-            mHandler.sendEmptyMessageDelayed(1, nextFrame);
             mImageView.setImageBitmap(mBitmap);
+            mHandler.sendEmptyMessageDelayed(1, nextFrame);
         }
     };
 
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadGif(){
-        File gifFile = new File(Environment.getExternalStorageDirectory(), "demo.gif");
+        File gifFile = new File(Environment.getExternalStorageDirectory(), "ai.gif");
         mGifHandler = new GifHandler(gifFile.getAbsolutePath());
 
         int width = mGifHandler.getWidth();
