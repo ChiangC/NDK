@@ -40,7 +40,7 @@ public class DexManager {
         }
 
         try {
-            DexFile dexFile = DexFile.loadDex(file.getAbsolutePath(), new File(mContext.getCacheDir(), "dex").getAbsolutePath(), Context.MODE_PRIVATE);
+            DexFile dexFile = DexFile.loadDex(file.getAbsolutePath(), new File(mContext.getCacheDir(), "opt").getAbsolutePath(), Context.MODE_PRIVATE);
             if(null == dexFile){
                 return;
             }

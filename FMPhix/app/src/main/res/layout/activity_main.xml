@@ -10,22 +10,32 @@
         android:id="@+id/result"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="180dp"
+        android:layout_marginRight="32dp"
         android:gravity="center"
         android:text="Result" />
 
     <Button
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
         android:gravity="center"
         android:onClick="calculate"
+        android:textAllCaps="false"
         android:text="Calculate 10/0" />
 
     <Button
         android:id="@+id/fix"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="32dp"
         android:gravity="center"
         android:onClick="fix"
-        android:text="Fix" />
+        android:textAllCaps="false"
+        android:text="Native Hot Fix" />
 
 </LinearLayout>

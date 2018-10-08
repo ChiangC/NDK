@@ -4,11 +4,13 @@ import com.fmtech.fmlive.jni.PushNative;
 import com.fmtech.fmlive.listener.LiveStateChangeListener;
 import com.fmtech.fmlive.pusher.LivePusher;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.content.ContextCompat;
@@ -22,7 +24,8 @@ public class MainActivity extends Activity implements LiveStateChangeListener{
 	static{
 		System.loadLibrary("FMLive");
 	}
-	private static final String URL = "rtmp://send3a.douyu.com/live/999565rgCRZQvilF?wsSecret=9fb71b52dea44153c724404de8e9e6df&wsTime=5ac5920e&wsSeek=off&wm=0&tw=0";
+	private static final String URL = "rtmp://send1a.douyu.com/live/"+
+			"999565rCbzAmjkyB?wsSecret=ff3656db35e2e56a5016b725fe9ccffb&wsTime=5b34e205&wsSeek=off&wm=0&tw=0";
 	private LivePusher mLivePusher;
 	private boolean isPushing;
 	private Button mPushBtn;
@@ -49,29 +52,43 @@ public class MainActivity extends Activity implements LiveStateChangeListener{
 		setContentView(R.layout.activity_main);
 		
 		mPushBtn = (Button)findViewById(R.id.btn_push);
-		
-		SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
-		SurfaceHolder surfaceHolder = surfaceView.getHolder();
-		mLivePusher = new LivePusher(surfaceHolder);
+
+		checkPermission();
+
 	}
 	
 	public void startLive(View view){
 		if (Build.VERSION.SDK_INT>22){
-            if (ContextCompat.checkSelfPermission(MainActivity.this,
-                    android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED){
-               
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{android.Manifest.permission.CAMERA}, 100);
-
-            }else {
+			if (checkSelfPermission(android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED
+					||checkSelfPermission(Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
+				requestPermissions(new String[]{android.Manifest.permission.CAMERA}, 100);
+			}else {
             	startLiveL();
             }
         }else {
         	startLiveL();
         }
-		
 	}
-	
+
+	public void checkPermission(){
+		if (Build.VERSION.SDK_INT>22){
+			if (checkSelfPermission(android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED
+					||checkSelfPermission(Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
+				requestPermissions(new String[]{android.Manifest.permission.CAMERA}, 100);
+			}else {
+				init();
+			}
+		}else {
+			init();
+		}
+	}
+
+	private void init(){
+		SurfaceView surfaceView = (SurfaceView)findViewById(R.id.surfaceview);
+		SurfaceHolder surfaceHolder = surfaceView.getHolder();
+		mLivePusher = new LivePusher(surfaceHolder);
+	}
+
 	private void startLiveL(){
 		if(!isPushing){
 			isPushing = true;
@@ -92,7 +109,13 @@ public class MainActivity extends Activity implements LiveStateChangeListener{
 	public void onError(int code) {
 		mHandler.sendEmptyMessage(code);
 	}
-	
-	
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+			init();
+		}
+	}
 	
 }

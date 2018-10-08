@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void fix(View view) {
         DexManager.getInstance().loadDexFile(new File(Environment.getExternalStorageDirectory(),"fixed.dex"));
+
     }
 
 }
