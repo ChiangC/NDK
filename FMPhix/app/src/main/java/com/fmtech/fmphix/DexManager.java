@@ -76,6 +76,8 @@ public class DexManager {
                 Method wrongMethod = clazz.getDeclaredMethod(wrongMethodName, rightMethod.getParameterTypes());
                 if(Build.VERSION.SDK_INT <= 18){
                     replace(Build.VERSION.SDK_INT, wrongMethod, rightMethod);
+                }else{
+                    replaceArt(Build.VERSION.SDK_INT, wrongMethod, rightMethod);
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -86,5 +88,6 @@ public class DexManager {
     }
 
     public native void replace(int sdkVersionCode, Method wrongMethod, Method rightMethod);
+    public native void replaceArt(int sdkVersionCode, Method wrongMethod, Method rightMethod);
 
 }

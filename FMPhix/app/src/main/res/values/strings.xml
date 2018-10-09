@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">FMPhix</string>
+    <string name="before_fix">"<b>Before fix</b>
+    public int calculate(){
+        int i = 10;
+        int j = 0;
+        return i/j;
+    }"</string>
+    <string name="after_fix">"<b>After fix</b>
+    public int calculate(){
+        int i = 100;
+        int j = 10;
+        return i/j;
+    }"</string>
 </resources>
